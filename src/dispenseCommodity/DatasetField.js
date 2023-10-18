@@ -5,36 +5,46 @@ import { ReactFinalForm,
         hasValue, 
         SingleSelectFieldFF, 
         composeValidators, 
-        number
+        number,
+        CircularLoader
         } from '@dhis2/ui';
 
+
+
 export function DatasetField(props) {
+    const getDataset = (orgUnitID) => {
+        const requestDataSet = {
+            request0: {
+                resource: `/organisationUnits/${orgUnitID}.json?fields=name,id,dataSets[name, id]`
+            }
+        }
+        const { loading, error, data } = useDataQuery(requestDataSet);
 
-    //const [datasets, setDatasets] = useState([])
-    const datasets = props.datasets;
-    const setDatasets = props.setDatasets;
-
-    useEffect(() => {
-        fetch("http://localhost:9999/api/dataSets")
-            .then(response => response.json())
-            .then((data) => {
-                console.log(data);
-                setDatasets(data.dataSets);
-            })
-            .catch(error => console.error(error));
-    }, []);
- 
+        if(error) {
+            return <span>ERROR: {error.message}</span>;
+        }
+        if(loading) {
+            return <CircularLoader/>;
+        }
+        if(data) {
+            console.log("datasetField request: ", data.request0)
+            return(
+                <ReactFinalForm.Field
+                    component={SingleSelectFieldFF} 
+                    name="dataSet"
+                    label="Dataset:"
+                    options={data.request0.dataSets.map((item) => {
+                        return {"label": item.name, "value": item.id}
+                    })}
+                >
+                </ReactFinalForm.Field>
+            );
+        }
+    }
+    const orgUnitID = props.orgUnitID;
     return(
         <>
-            <ReactFinalForm.Field
-                component={SingleSelectFieldFF} 
-                name="dataSet"
-                label="Dataset:"
-                options={datasets.map((item) => {
-                    return {"label": item.displayName, "value": item.id}
-                })}
-            >
-            </ReactFinalForm.Field>
+            {getDataset(orgUnitID)}
         </>
     );
 }
