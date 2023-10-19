@@ -23,7 +23,10 @@ const request = {
 export function CommodityTable(props) {
     const { loading, error, data } = useDataQuery(request);
 
-    if (data) data.request0.dataSetElements.map((el) => {console.log(el.dataElement.displayName)})
+    if (loading) {
+        return <CircularLoader />;
+    }
+
     function CommodityRows() {
         if (data) {
             return data.request0.dataSetElements.map((el) => {
@@ -39,7 +42,7 @@ export function CommodityTable(props) {
     return (
         <>
             <h1>Commodity Table</h1>
-            <SingleSelectField label="Choose category" >
+            <SingleSelectField label="Choose category">
                 <SingleSelectOption label="Live-Saving commodities" value="1" />
             </SingleSelectField>
             <Table>
