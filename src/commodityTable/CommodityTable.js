@@ -23,10 +23,15 @@ const request = {
 export function CommodityTable(props) {
     const { loading, error, data } = useDataQuery(request);
 
+    if (data) data.request0.dataSetElements.map((el) => {console.log(el.dataElement.displayName)})
     function CommodityRows() {
         if (data) {
-            
-            data.request0.dataSetElements.map((el) => {
+            return data.request0.dataSetElements.map((el) => {
+                const tokens = el.dataElement.displayName.split(" ")
+                return <TableRow>
+                        <TableCell>{tokens[tokens.length-1]}</TableCell>
+                        <TableCell>?</TableCell>
+                    </TableRow>
             });
         }
     }
@@ -44,6 +49,9 @@ export function CommodityTable(props) {
                         <TableCellHead>Stock balance</TableCellHead>
                     </TableRowHead>
                 </TableHead>
+                <TableBody>
+                    <CommodityRows />
+                </TableBody>
             </Table>
         </>
     );
