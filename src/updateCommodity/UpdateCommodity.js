@@ -1,6 +1,10 @@
 import React from "react"
 import { useDataQuery } from '@dhis2/app-runtime'
-import {CircularLoader} from '@dhis2/ui'
+import {CircularLoader,
+    DropdownButton,
+    FlyoutMenu,
+    MenuItem
+} from '@dhis2/ui'
 
 
 export function UpdateCommodity(props) {
@@ -24,12 +28,21 @@ export function UpdateCommodity(props) {
       }
   
       if (data) {
-        console.log(data.request0.dataSetElements)
+        console.log(data.request0.dataSetElements[0].dataElement.displayName)
         return (
-            <h1>UpdateCommodity</h1>
+            <DropdownButton
+            component={<FlyoutMenu>
+                {data.request0.dataSetElements.map(elem => {
+                    const names = elem.dataElement.displayName.split("- ")[1]
+                    return(
+                        <MenuItem key={names} label={names} id={names}></MenuItem>
+                    )
+                })}
+                </FlyoutMenu>}
+            name="buttonName"
+            value="buttonValue"
+            >{data.request0.displayName}</DropdownButton>
     )}
-
-    
     
     return (
         <h1>UpdateCommodity</h1>
