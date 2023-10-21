@@ -5,16 +5,34 @@ import { CircularLoader,
     SingleSelectOption ,
     MenuItem,
     ReactFinalForm,
+    SingleSelectFieldFF,
     Field,
     Input,
     Button 
 } from '@dhis2/ui'
+import { useDataMutation } from "@dhis2/app-runtime"
 
+const dataMutationQuery = {
+    resource: 'dataValueSets',
+    type: 'create',
+    dataSet: 'ULowA8V3ucd',
+    data: ({ value, dataElement, period, orgUnit }) => ({
+        dataValues: [
+            {
+                dataElement: dataElement,
+                period: period,
+                orgUnit: orgUnit,
+                value: value,
+            },
+        ],
+    }),
+}
 
 export function UpdateCommodity(props) {
 
     const [selectedCommodity, setSelectedCommodity] = useState()
     const [selectedAmount, setSelectedAmount] = useState()
+    const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery)
 
     const request = {
         request0: {
@@ -25,7 +43,8 @@ export function UpdateCommodity(props) {
         }
       }
 
-    function submit () {
+    function submit (formInput) {
+        //console.log(formInput)
         if (!(selectedCommodity)) {
             alert("No commodity was selected")
             return
@@ -39,6 +58,13 @@ export function UpdateCommodity(props) {
             return
         }
         console.log(selectedAmount)
+        console.log(selectedCommodity)
+        mutate({
+            value: selectedAmount,
+            dataElement: selectedCommodity,
+            period: '202310',
+            orgUnit: 'xQIU41mR69s',
+        })
     }
 
     const { loading, error, data } = useDataQuery(request)
@@ -64,7 +90,7 @@ export function UpdateCommodity(props) {
                             {data.request0.dataSetElements.map(elem => {
                                 const names = elem.dataElement.displayName.split("- ")[1]
                                 return(
-                                    <SingleSelectOption key={names} value={names} label={names}></SingleSelectOption>
+                                    <SingleSelectOption key={names} value={elem.dataElement.id} label={names}></SingleSelectOption>
                                 )
                             })}
                         </SingleSelectField>
@@ -79,7 +105,7 @@ export function UpdateCommodity(props) {
                                 id="uppdateNum"
                             ></Input>
                         </Field>
-                        <Button type="submit">Submit</Button>
+                        <Button onClick={submit}>Submit</Button>
                     </form>
                 )}
             </ReactFinalForm.Form> 
