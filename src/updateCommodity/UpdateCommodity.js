@@ -1,13 +1,13 @@
 import React, { useState } from "react"
 import { useDataQuery } from '@dhis2/app-runtime'
 import { CircularLoader,
-    SingleSelectField ,
-    SingleSelectOption ,
-    MenuItem,
     ReactFinalForm,
     SingleSelectFieldFF,
-    Field,
-    Input,
+    InputFieldFF,
+    composeValidators,
+    hasValue,
+    integer,
+    createMinNumber,
     Button 
 } from '@dhis2/ui'
 import { useDataMutation } from "@dhis2/app-runtime"
@@ -30,8 +30,6 @@ const dataMutationQuery = {
 
 export function UpdateCommodity(props) {
 
-    const [selectedCommodity, setSelectedCommodity] = useState()
-    const [selectedAmount, setSelectedAmount] = useState()
     const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery)
 
     const request = {
@@ -44,24 +42,10 @@ export function UpdateCommodity(props) {
       }
 
     function submit (formInput) {
-        //console.log(formInput)
-        if (!(selectedCommodity)) {
-            alert("No commodity was selected")
-            return
-        }
-        if (!(selectedAmount)) {
-            alert("No number provided")
-            return
-        }
-        if (selectedAmount < 0 || selectedAmount % 1 != 0) {
-            alert("innvalid number " + selectedAmount + "\nThe number must be a whole number greater than 0")
-            return
-        }
-        console.log(selectedAmount)
-        console.log(selectedCommodity)
+        console.log(formInput)
         mutate({
-            value: selectedAmount,
-            dataElement: selectedCommodity,
+            value: formInput.value,
+            dataElement: formInput.dataElement,
             period: '202310',
             orgUnit: 'xQIU41mR69s',
         })
@@ -94,21 +78,17 @@ export function UpdateCommodity(props) {
                             label={data.request0.displayName}
                             id="singleSelect"
                             placeholder="Select - One"
+                            validate={composeValidators(hasValue)}
                             component={SingleSelectFieldFF}
                             options={getOptions(data)}
                         />
-                        <Field
-                            label="new amount"
-                        >
-                            <Input
-                                onChange={(data) => setSelectedAmount(data.value)}
-                                type="number"
-                                step="1"
-                                min="0"
-                                id="uppdateNum"
-                            ></Input>
-                        </Field>
-                        <Button onClick={submit}>Submit</Button>
+                        <ReactFinalForm.Field
+                        name="value"
+                        label="new amount"
+                        component={InputFieldFF}
+                        validate={composeValidators(hasValue, integer, createMinNumber(0))}
+                        />
+                        <Button type="submit">Submit</Button>
                     </form>
                 )}
             </ReactFinalForm.Form> 
