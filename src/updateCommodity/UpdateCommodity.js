@@ -67,6 +67,15 @@ export function UpdateCommodity(props) {
         })
     }
 
+    function getOptions (data) {
+        const list = []
+        data.request0.dataSetElements.map(elem => {
+            const names = elem.dataElement.displayName.split("- ")[1]
+            list.push({label: names, value: elem.dataElement.id})
+        })
+        return list
+    }
+
     const { loading, error, data } = useDataQuery(request)
       if (error) {
           return <span>ERROR: {error.message}</span>
@@ -80,20 +89,14 @@ export function UpdateCommodity(props) {
             <ReactFinalForm.Form onSubmit={submit}>
                 {({ handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
-                        <SingleSelectField
+                        <ReactFinalForm.Field
+                            name="dataElement"
                             label={data.request0.displayName}
-                            onChange={(data) => setSelectedCommodity(data.selected)}
-                            selected={selectedCommodity}
                             id="singleSelect"
                             placeholder="Select - One"
-                        >
-                            {data.request0.dataSetElements.map(elem => {
-                                const names = elem.dataElement.displayName.split("- ")[1]
-                                return(
-                                    <SingleSelectOption key={names} value={elem.dataElement.id} label={names}></SingleSelectOption>
-                                )
-                            })}
-                        </SingleSelectField>
+                            component={SingleSelectFieldFF}
+                            options={getOptions(data)}
+                        />
                         <Field
                             label="new amount"
                         >
