@@ -14,7 +14,7 @@ export function AmountField() {
         <>
             <ReactFinalForm.Field
                 component={InputFieldFF} 
-                name="amount"
+                name="dispensedAmount"
                 label="Amount:"
                 validate={composeValidators(hasValue, number)}
             >
