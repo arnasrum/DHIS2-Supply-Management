@@ -2,7 +2,7 @@ import React from "react";
 import { ReactFinalForm, 
         InputFieldFF, 
         hasValue, 
-        SingleSelectFieldFF, 
+        createMinNumber,
         composeValidators, 
         number
         } from '@dhis2/ui';
@@ -16,7 +16,8 @@ export function AmountField() {
                 component={InputFieldFF} 
                 name="dispensedAmount"
                 label="Amount:"
-                validate={composeValidators(hasValue, number)}
+                placeholder="Input amount to be dispensed"
+                validate={composeValidators(hasValue, number, createMinNumber(1))}  
             >
             </ReactFinalForm.Field> 
         </>
