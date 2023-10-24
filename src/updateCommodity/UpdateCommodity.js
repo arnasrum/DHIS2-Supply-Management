@@ -1,4 +1,3 @@
-import React, { useState } from "react"
 import { useDataQuery } from '@dhis2/app-runtime'
 import { CircularLoader,
     ReactFinalForm,
@@ -12,6 +11,7 @@ import { CircularLoader,
 } from '@dhis2/ui'
 import { useDataMutation } from "@dhis2/app-runtime"
 
+// muatation querry
 const dataMutationQuery = {
     resource: 'dataValueSets',
     type: 'create',
@@ -28,21 +28,24 @@ const dataMutationQuery = {
     }),
 }
 
-export function UpdateCommodity(props) {
-
-    const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery)
-
-    const request = {
-        request0: {
-          resource: "/dataSets/ULowA8V3ucd",
-          params: {
+// request to get commodities
+const request = {
+    request0: {
+        resource: "/dataSets/ULowA8V3ucd",
+        params: {
             fields: "displayName,dataSetElements[dataElement[id,displayName]]"
-          }
         }
-      }
+    }
+}
 
+export function UpdateCommodity(props) {
+    // data muatation and data querry
+    const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery)
+    const { loading, error, data } = useDataQuery(request)
+
+    // on submit
     function submit (formInput) {
-        console.log(formInput)
+        // send muatation querry
         mutate({
             value: formInput.value,
             dataElement: formInput.dataElement,
@@ -51,6 +54,7 @@ export function UpdateCommodity(props) {
         })
     }
 
+    // makes a list of all the options based on a dataset of commodities
     function getOptions (data) {
         const list = []
         data.request0.dataSetElements.map(elem => {
@@ -60,23 +64,24 @@ export function UpdateCommodity(props) {
         return list
     }
 
-    const { loading, error, data } = useDataQuery(request)
-      if (error) {
-          return <span>ERROR: {error.message}</span>
-      }
-  
-      if (loading) {
-          return <CircularLoader/>
-      }
-      if (data) {
+    // on error fetching commodities
+    if (error) {
+      return <span>ERROR: {error.message}</span>
+    }
+    // when loding fetching commodities
+    if (loading) {
+      return <CircularLoader/>
+    }
+    // when data is pressent fetching commodities
+    if (data) {
+        // return form
         return (
             <ReactFinalForm.Form onSubmit={submit}>
                 {({ handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
                         <ReactFinalForm.Field
                             name="dataElement"
-                            label={data.request0.displayName}
-                            id="singleSelect"
+                            label={data.request0.displayName}                                id="singleSelect"
                             placeholder="Select - One"
                             validate={composeValidators(hasValue)}
                             component={SingleSelectFieldFF}
@@ -88,13 +93,10 @@ export function UpdateCommodity(props) {
                         component={InputFieldFF}
                         validate={composeValidators(hasValue, integer, createMinNumber(0))}
                         />
-                        <Button type="submit">Submit</Button>
+                        <Button type="submit">Submit</Button>                        
                     </form>
                 )}
             </ReactFinalForm.Form> 
-    )}
-    
-    return (
-        <h1>UpdateCommodity</h1>
-    )
+        )
+    }
 }
