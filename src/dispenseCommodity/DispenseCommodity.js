@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { AmountField } from "./AmountField";
 import { CommodityField } from "./CommodityField";
-import { OrgField } from "./OrgField";
 import { NameField } from "./NameField";
 
 import { useDataQuery } from "@dhis2/app-runtime";
@@ -89,7 +88,6 @@ export function DispenseCommodity(props) {
             .then(response => response.json())
             .then(data => {
                 const newStock = parseInt(data[0]) - formInput.dispensedAmount;
-                console.log("newStock", newStock);
                 if(newStock < 0) {
                     throw new Error("Dispensed amount is higher than current stock");
                 }
