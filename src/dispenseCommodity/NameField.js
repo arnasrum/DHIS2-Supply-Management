@@ -1,11 +1,10 @@
 import React from "react";
 import { ReactFinalForm, 
     hasValue, 
-    SingleSelectFieldFF, 
     InputFieldFF,
     composeValidators, 
     string
-    } from '@dhis2/ui';
+} from '@dhis2/ui';
 
 
 export function NameField(props) {

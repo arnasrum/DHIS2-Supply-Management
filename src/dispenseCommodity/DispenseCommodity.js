@@ -1,20 +1,20 @@
-import React, {useState, useEffect} from "react";
-import { AmountField } from "./AmountField";
-import { CommodityField } from "./CommodityField";
-import { NameField } from "./NameField";
-
+import React from "react";
 import { useDataQuery } from "@dhis2/app-runtime";
 import { ReactFinalForm, 
         CircularLoader,
         Button, 
-    } from '@dhis2/ui';
+} from '@dhis2/ui';
+
+import { AmountField } from "./AmountField";
+import { CommodityField } from "./CommodityField";
+import { NameField } from "./NameField";
 
 const request = {
     meRequest: {
         resource: "/me.json",
         params: {
             fields: "id,name,organisationUnits"
-        }    ,
+        },
     },
     commodityFieldRequest: {
         resource: `/dataSets/ULowA8V3ucd`,
@@ -22,29 +22,9 @@ const request = {
             fields: "displayName,dataSetElements[dataElement[id,displayName,*]]"
         }
     },
-    orgRequest: {
-        resource: "/organisationUnits",
-        params: {
-            paging: true,
-        }
-    },
-
-    transactionRequest: {
-        resource: "/dataStore/transaction/"
-    },
-
-    request2: {
-        resource: "/dataValueSets.json",
-        params: {
-            dataSet: "ULowA8V3ucd",
-            period: 202310,
-            orgUnit: "ZpE2POxvl9P",
-        }
-    }
 }
 export function DispenseCommodity(props) {
     
-    // Maybe necessary to have state for amount
     const { loading, error, data } = useDataQuery(request)
     if (error) {
         return <span>ERROR: {error.message}</span>;
@@ -55,7 +35,6 @@ export function DispenseCommodity(props) {
     }
 
     if (data) {
-        //console.log("API response:",data);
         const orgUnit = data.meRequest.organisationUnits[0].id;
         return(
         <>
@@ -65,7 +44,6 @@ export function DispenseCommodity(props) {
                     <form onSubmit={handleSubmit}>
                         <CommodityField orgUnit={orgUnit} data={data.commodityFieldRequest}/>
                         <AmountField/>
-                        <NameField name="dispensedBy" label="Dispensed by: " placeholder="Name of dispenser"/>
                         <NameField name="dispensedTo" label="Dispensed To: " placeholder="Name of receiver"/>
                         <Button type="submit" primary>Dispense</Button>
                     </form>
@@ -79,7 +57,8 @@ export function DispenseCommodity(props) {
         let query = "http://localhost:9999/api/dataValues.json?";
         query = query + "de=" + formInput.commodity.split("&")[0];
         const date = new Date();
-        query = query + "&pe=" + "2023" + ("0" + (parseInt(date.getMonth()) + 1).toString()).slice(-2)
+        const datelist = date.toISOString().split("-");
+        query = query + "&pe=" + datelist[0] + datelist[1];
         query = query + "&ou=ZpE2POxvl9P";
         // Hvilken org blir denne sendt fra??? Hadde tenkt at den som er logget inn sin
         //query = query + "&ou=" + data.meRequest.organisationUnits[0].id;
@@ -95,18 +74,9 @@ export function DispenseCommodity(props) {
                     method: "POST"
                 });
             })
-            .catch(error => console.error(error))
-            .finally(() => {
-                /*
-                fetch(query)
-                    .then(response => response.json())
-                    .then( (data) => {
-                        setTimeout(data, 1000);
-                        console.log("new data", data)
-                    })
-                */
-               const query2 = "http://localhost:9999/api/dataStore/transaction/" + crypto.randomUUID();
-               fetch(query2, {
+            .then((response) => {
+               const postQuery = "http://localhost:9999/api/dataStore/transaction/" + crypto.randomUUID();
+               fetch(postQuery, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"
@@ -116,14 +86,15 @@ export function DispenseCommodity(props) {
                         time: date.getHours().toString(),
                         amount: formInput.dispensedAmount,
                         commodityID: formInput.commodity.split("&")[0],
-                        dispensedBy: formInput.dispensedBy,
+                        dispensedBy: data.meRequest.name,
                         dispensedTo: formInput.dispensedTo,
                         commodityName: formInput.commodity.split("&")[1]
                     })
                })
                 .then(response => response.json())
                 .then(response => console.log(response));
-            });
+            })
+            .catch(error => console.error(error));
         
     }
 }

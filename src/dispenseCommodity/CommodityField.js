@@ -1,15 +1,9 @@
-import React, { useState, useEffect} from "react";
-import { useDataQuery } from "@dhis2/app-runtime";
+import React from "react";
 import { ReactFinalForm, 
-        InputFieldFF, 
         hasValue, 
         SingleSelectFieldFF, 
-        SingleSelectField, 
-        composeValidators, 
-        number,
-        CircularLoader
-        } from '@dhis2/ui';
-import { SingleSelectOption } from '@dhis2-ui/select'
+        composeValidators
+} from '@dhis2/ui';
 
 export function CommodityField(props) {
 
