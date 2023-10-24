@@ -93,7 +93,7 @@ export function UpdateCommodity(props) {
                         />
                         <ReactFinalForm.Field
                         name="value"
-                        label="new amount"
+                        label="New amount"
                         placeholder="A number greater than 0"
                         inputWidth="300px"
                         component={InputFieldFF}
