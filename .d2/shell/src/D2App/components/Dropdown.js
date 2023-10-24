@@ -19,7 +19,6 @@ export function DropDown(props) {
     component: SingleSelectFieldFF,
     name: "dataElement",
     label: "Select category",
-    options: datasetOptions,
-    onChange: selectedValue => onChange(selectedValue)
+    options: datasetOptions
   }));
 }

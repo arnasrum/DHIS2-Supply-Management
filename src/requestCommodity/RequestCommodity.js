@@ -6,10 +6,7 @@ import {
   ReactFinalForm,
   InputFieldFF,
   Button,
-  SingleSelectFieldFF,
-  hasValue,
   CircularLoader,
-  number,
   composeValidators,
 } from "@dhis2/ui";
 import {
@@ -29,41 +26,58 @@ const request = {
       fields: "displayName,dataSetElements[dataElement[id,displayName]]",
     },
   },
-  // clinics: {
-  //   // resource: `/api/organisationUnits?id=${selectedOption.value}`,
-  //   resource: `/api/organisationUnits?id=DiszpKrYNg8`,
-  //   params: {
-  //     fields: "displayName",
-  //   },
-  // },
+  clinics: {
+    resource: "/organisationUnits?id=xQIU41mR69s",
+    params: {
+      fields: "displayName",
+    },
+  },
 };
 
 export function RequestCommodity(props) {
   const [tableVisibility, setTableVisibility] = useState(false);
+  const [commodityData, setCommodityData] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null); // Store the selected option from dropdown
 
-  function onSubmit(values) {
-    console.log(values);
-  }
+  const fetchData = (selectedValue) => {
+    const query = {
+      resource: `/dataValues.json?de=${selectedValue}&pe=202310&ou=xQIU41mR69s&co=J2Qf1jtZuj8`,
+      params: {
+        fields: "*",
+      },
+    };
 
-  const handleOptionChange = (selectedValue) => {
-    console.log("selected", selectedValue);
-    setSelectedOption(selectedValue);
-  };
+    // Use the useDataQuery hook to fetch data
+    const { loading, error, data } = useDataQuery(query);
 
-  const handleFormSubmit = (values) => {
-    if (selectedOption) {
-      console.log("Selected option:", selectedOption);
-      // You can also access specific properties of the selected option, e.g., selectedOption.value
-      // console.log("Selected value:", selectedOption.value);
-    } else {
-      console.log("No option selected");
+    if (error) {
+      console.error("Error fetching data:", error.message);
     }
-    // You can also log the form values if needed
-    console.log("Form values:", values);
+
+    if (!loading && data) {
+      // Check and filter the data values where value > 0
+      const filteredData = data.dataValues.filter(
+        (dataValue) => dataValue.value > 0
+      );
+      console.log("filteredData", filteredData);
+
+      // Set the filtered data for display
+      setCommodityData(filteredData);
+    }
   };
 
-  // useEffect(() => {
+  function onSubmit(values) {
+    let value = values.dataElement;
+    let query = `http://localhost:9999//api/dataValues.json?de=${value}&pe=202310&ou=xQIU41mR69s&co=J2Qf1jtZuj8`;
+    console.log("query", query);
+    fetch(query)
+      .then((response) => console.log("response", response.json))
+      .then((data) => {
+        const value = parseInt(data[0]); // Access the first (and only) element in the array
+        console.log("value", value);
+      })
+      .catch((error) => console.error(error));
+  }
 
   // Execute the data query
   const { loading, error, data } = useDataQuery(request);
@@ -76,75 +90,34 @@ export function RequestCommodity(props) {
     return <CircularLoader />;
   }
 
-  if (data) {
-    // Handle the new data as needed
-    console.log("Data from the new API:", data);
-
-    return (
-      <>
-        <h1>Request Commodity</h1>
-        <p>
-          Here you can request commodities from nearby clincs who has the
-          requested commodity in stock.
-        </p>
-        <ReactFinalForm.Form onSubmit={handleFormSubmit}>
-          {({ handleSubmit }) => (
-            <form onSubmit={handleSubmit} autoComplete="off">
-              <DropDown
-                data={data.commodities}
-                onChange={handleOptionChange}
-              ></DropDown>
-            </form>
-          )}
-        </ReactFinalForm.Form>
-        <br />
+  return (
+    <>
+      <h1>Request Commodity</h1>
+      <p>
+        Here you can request commodities from nearby clinics who have the
+        requested commodity in stock.
+      </p>
+      <ReactFinalForm.Form onSubmit={onSubmit}>
+        {({ handleSubmit }) => (
+          <form onSubmit={handleSubmit} autoComplete="off">
+            <DropDown data={data.commodities} />
+            <Button type="submit" primary>
+              Request
+            </Button>
+          </form>
+        )}
+      </ReactFinalForm.Form>
+      <br />
+      {commodityData.length > 0 && (
         <div>
-          {/* <Table>
-            <TableHead>
-              <TableRowHead>
-                <TableCellHead>Clinic</TableCellHead>
-                <TableCellHead>Commodity</TableCellHead>
-                <TableCellHead>Stock count</TableCellHead>
-                <TableCellHead>Amount to request</TableCellHead>
-              </TableRowHead>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell>
-                  <ReactFinalForm.Form onSubmit={onSubmit}>
-                    {({ handleSubmit }) => (
-                      <form onSubmit={handleSubmit} autoComplete="off">
-                        <ReactFinalForm.Field
-                          name="value"
-                          component={InputFieldFF}
-                          validate={composeValidators(hasValue, number)}
-                        />
-                      </form>
-                    )}
-                  </ReactFinalForm.Form>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table> */}
-          <br />
-          <Button
-            onClick={() => {
-              if (selectedOption) {
-                console.log("Selected value:", selectedOption.value);
-              } else {
-                console.log("No option selected");
-              }
-            }}
-            type="submit"
-            primary
-          >
-            Request
-          </Button>
+          <h2>Fetched Data</h2>
+          <ul>
+            {commodityData.map((dataValue) => (
+              <li key={dataValue.id}>{dataValue.value}</li>
+            ))}
+          </ul>
         </div>
-      </>
-    );
-  }
+      )}
+    </>
+  );
 }

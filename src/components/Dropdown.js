@@ -31,7 +31,6 @@ export function DropDown(props) {
         name="dataElement"
         label="Select category"
         options={datasetOptions}
-        onChange={(selectedValue) => onChange(selectedValue)}
       />
     </>
   );
