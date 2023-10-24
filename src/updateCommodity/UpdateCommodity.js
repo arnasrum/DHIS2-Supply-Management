@@ -45,11 +45,13 @@ export function UpdateCommodity(props) {
 
     // on submit
     function submit (formInput) {
+        // get date, index 0 is year 1 is month
+        const date = new Date().toISOString().split("-")
         // send muatation querry
         mutate({
             value: formInput.value,
             dataElement: formInput.dataElement,
-            period: '202310',
+            period: date[0] + date[1],
             orgUnit: 'xQIU41mR69s',
         })
     }
@@ -81,15 +83,19 @@ export function UpdateCommodity(props) {
                     <form onSubmit={handleSubmit}>
                         <ReactFinalForm.Field
                             name="dataElement"
-                            label={data.request0.displayName}                                id="singleSelect"
+                            label={data.request0.displayName}                                
+                            id="singleSelect"
                             placeholder="Select - One"
                             validate={composeValidators(hasValue)}
                             component={SingleSelectFieldFF}
                             options={getOptions(data)}
+                            inputWidth="300px"
                         />
                         <ReactFinalForm.Field
                         name="value"
                         label="new amount"
+                        placeholder="A number greater than 0"
+                        inputWidth="300px"
                         component={InputFieldFF}
                         validate={composeValidators(hasValue, integer, createMinNumber(0))}
                         />
