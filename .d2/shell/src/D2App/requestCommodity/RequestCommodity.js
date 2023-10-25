@@ -48,14 +48,21 @@ export function RequestCommodity(props) {
       setCommodityData(filteredData);
     }
   };
-  function onSubmit(values) {
+  async function onSubmit(values) {
     let value = values.dataElement;
     let query = `http://localhost:9999//api/dataValues.json?de=${value}&pe=202310&ou=xQIU41mR69s&co=J2Qf1jtZuj8`;
     console.log("query", query);
-    fetch(query).then(response => console.log("response", response.json)).then(data => {
-      const value = parseInt(data[0]); // Access the first (and only) element in the array
-      console.log("value", value);
-    }).catch(error => console.error(error));
+    try {
+      const response = await fetch(query);
+      if (response.ok) {
+        const amount = await response.json();
+        console.log("Amount:", amount);
+      } else {
+        console.error("HTTP Error:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   }
 
   // Execute the data query
