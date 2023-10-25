@@ -35,7 +35,6 @@ export function DispenseCommodity(props) {
     }
 
     if (data) {
-        const orgUnit = data.meRequest.organisationUnits[0].id;
         return(
         <>
             <h1>Dispense Commodity</h1>
@@ -60,8 +59,6 @@ export function DispenseCommodity(props) {
         const datelist = date.toISOString().split("-");
         query = query + "&pe=" + datelist[0] + datelist[1];
         query = query + "&ou=xQIU41mR69s";
-        // Hvilken org blir denne sendt fra??? Hadde tenkt at den som er logget inn sin
-        //query = query + "&ou=" + data.meRequest.organisationUnits[0].id;
         query = query + "&co=J2Qf1jtZuj8";
         fetch(query)
             .then(response => response.json())
