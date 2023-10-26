@@ -1,39 +1,81 @@
 import React, { useState, useEffect } from "react";
-import { useDataQuery } from "@dhis2/app-runtime";
-import { ReactFinalForm, InputFieldFF, Button, CircularLoader, composeValidators, hasValue, number } from "@dhis2/ui";
+import { useDataQuery, useDataMutation } from "@dhis2/app-runtime";
+import { requestCommodities, requestComValues, dataMutationQuery } from "../apiConstants";
+import classes from "../App.module.css";
+import { ReactFinalForm, InputFieldFF, Button, CircularLoader, composeValidators, hasValue, number, createMinNumber } from "@dhis2/ui";
 import { Table, TableBody, TableCell, TableCellHead, TableHead, TableRow, TableRowHead } from "@dhis2/ui";
-const request = {
-  commodities: {
-    resource: "/dataSets/ULowA8V3ucd",
-    params: {
-      fields: "displayName,dataSetElements[dataElement[id,displayName]]"
+export function StoreManagment() {
+  // Get values and commodities form the API
+  const {
+    loading: loadingVal,
+    error: errorVal,
+    data: dataVal
+  } = useDataQuery(requestComValues);
+  const {
+    loading: loadingCom,
+    error: errorCom,
+    data: dataCom
+  } = useDataQuery(requestCommodities);
+  //Data mutation
+  const [mutate, {
+    loadingM,
+    errorM
+  }] = useDataMutation(dataMutationQuery);
+
+  // State for input values in the form
+  const [inputValues, setInputValues] = useState({});
+
+  // Function to handle input change
+  function handleInputChange(dataElement, value) {
+    console.log("jellu");
+    setInputValues(prevInputValues => ({
+      ...prevInputValues,
+      [dataElement]: value
+    }));
+  }
+
+  // Function to handle form submit
+  function onSubmit() {
+    console.log("inputValues", inputValues);
+    alert("Commodity stock updated successfully!");
+    // Send mutation query for each input value
+    for (const dataElement in inputValues) {
+      if (inputValues.hasOwnProperty(dataElement)) {
+        const value = parseInt(inputValues[dataElement]);
+        if (!isNaN(value)) {
+          mutate({
+            value,
+            dataElement,
+            period: "202310",
+            orgUnit: "xQIU41mR69s"
+          });
+          console.log("value", value);
+        }
+      }
     }
   }
-};
-export function StoreManagment() {
-  // Execute the data query
-  const {
-    loading,
-    error,
-    data
-  } = useDataQuery(request);
-  console.log("data", data);
-  function onSubmit() {
-    console.log("query");
-  }
-  if (error) {
+  if (errorVal || errorCom) {
     console.error("Error fetching data from the new API:", error.message);
   }
-  if (loading) {
+
+  // Map values to commodities
+  const values = new Map();
+  if (dataVal) dataVal.request0.dataValues.forEach(el => {
+    // Fetch the first element as it is the newest in the list
+    if (!values.has(el.dataElement)) values.set(el.dataElement, parseInt(el.value));
+  });
+  if (loadingCom || loadingVal) {
     return /*#__PURE__*/React.createElement(CircularLoader, null);
   }
-  if (data) {
-    const rows = data.commodities.dataSetElements.map(dataset => ({
+
+  // If data is fetched, create a table row for each commodity
+  if (dataCom) {
+    const rows = dataCom.commodities.dataSetElements.map(dataset => ({
       id: dataset.dataElement.id,
       displayName: dataset.dataElement.displayName.replace("Commodities - ", "")
     })).sort((a, b) => a.displayName.localeCompare(b.displayName)).map(dataset => /*#__PURE__*/React.createElement(TableRow, {
       key: dataset.id
-    }, /*#__PURE__*/React.createElement(TableCell, null, dataset.id), /*#__PURE__*/React.createElement(TableCell, null, dataset.displayName), /*#__PURE__*/React.createElement(TableCell, null, /*#__PURE__*/React.createElement(ReactFinalForm.Form, {
+    }, /*#__PURE__*/React.createElement(TableCell, null, dataset.id), /*#__PURE__*/React.createElement(TableCell, null, dataset.displayName), /*#__PURE__*/React.createElement(TableCell, null, values.get(dataset.id)), /*#__PURE__*/React.createElement(TableCell, null, /*#__PURE__*/React.createElement(ReactFinalForm.Form, {
       onSubmit: onSubmit
     }, _ref => {
       let {
@@ -44,10 +86,20 @@ export function StoreManagment() {
         autoComplete: "off"
       }, /*#__PURE__*/React.createElement(ReactFinalForm.Field, {
         name: "value",
+        id: dataset.id,
         component: InputFieldFF,
-        validate: composeValidators(hasValue, number)
+        validate: composeValidators(hasValue, number, createMinNumber(0)),
+        onChange: event => handleInputChange(dataset.id, event.target.value),
+        value: inputValues[dataset.id] || ""
       }));
     }))));
-    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h1", null, "Request Commodity"), /*#__PURE__*/React.createElement(Table, null, /*#__PURE__*/React.createElement(TableHead, null, /*#__PURE__*/React.createElement(TableRowHead, null, /*#__PURE__*/React.createElement(TableCellHead, null, "ID"), /*#__PURE__*/React.createElement(TableCellHead, null, "Display Name"), /*#__PURE__*/React.createElement(TableCellHead, null, "Amount"))), /*#__PURE__*/React.createElement(TableBody, null, rows)));
+    return /*#__PURE__*/React.createElement("div", {
+      className: classes.storemanagment
+    }, /*#__PURE__*/React.createElement("h1", null, "Store Management"), /*#__PURE__*/React.createElement("p", null, "Update stock count balance when receiving the monthly delivery, enter the amount you received."), /*#__PURE__*/React.createElement(Table, {
+      className: classes.table
+    }, /*#__PURE__*/React.createElement(TableHead, null, /*#__PURE__*/React.createElement(TableRowHead, null, /*#__PURE__*/React.createElement(TableCellHead, null, "ID"), /*#__PURE__*/React.createElement(TableCellHead, null, "Display Name"), /*#__PURE__*/React.createElement(TableCellHead, null, "Current Amount"), /*#__PURE__*/React.createElement(TableCellHead, null, "Amount"))), /*#__PURE__*/React.createElement(TableBody, null, rows)), /*#__PURE__*/React.createElement(Button, {
+      className: classes.submitbutton,
+      onClick: onSubmit
+    }, "Submit"));
   }
 }
