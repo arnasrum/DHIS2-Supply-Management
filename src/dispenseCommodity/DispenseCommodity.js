@@ -41,7 +41,7 @@ export function DispenseCommodity(props) {
             <ReactFinalForm.Form onSubmit={onSubmit}>
                 {({handleSubmit}) => (
                     <form onSubmit={handleSubmit}>
-                        <CommodityField orgUnit={orgUnit} data={data.commodityFieldRequest}/>
+                        <CommodityField data={data.commodityFieldRequest}/>
                         <AmountField/>
                         <NameField name="dispensedTo" label="Dispensed To: " placeholder="Name of receiver"/>
                         <Button type="submit" primary>Dispense</Button>
@@ -79,8 +79,7 @@ export function DispenseCommodity(props) {
                         "Content-type": "application/json"
                     },
                     body: JSON.stringify({
-                        date: date.getFullYear().toString(), 
-                        time: date.getHours().toString(),
+                        date: date.toISOString(), 
                         amount: formInput.dispensedAmount,
                         commodityID: formInput.commodity.split("&")[0],
                         dispensedBy: data.meRequest.name,
