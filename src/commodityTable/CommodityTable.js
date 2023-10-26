@@ -48,9 +48,9 @@ export function CommodityTable(props) {
     function CommodityRows() {
         if (dataCom) {
             return dataCom.request0.dataSetElements.map((el) => {
-                const tokens = el.dataElement.displayName.split(" ")
+                const tokens = el.dataElement.displayName.split(" ").slice(2)
                 return <TableRow>
-                        <TableCell>{tokens[tokens.length-1]}</TableCell>
+                        <TableCell>{tokens.join(" ")}</TableCell>
                         <TableCell>{values.get(el.dataElement.id)}</TableCell>
                     </TableRow>
             });
