@@ -1,0 +1,10 @@
+{
+  "type": "app",
+  "name": "project",
+  "version": "1.0.0",
+  "description": "",
+  "title": "project",
+  "entryPoints": {
+    "app": "index.html"
+  }
+}
