@@ -72,7 +72,7 @@ export function DispenseCommodity(props) {
                 });
             })
             .then((response) => {
-               const postQuery = "http://localhost:9999/api/dataStore/transaction/" + crypto.randomUUID();
+               const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/" + crypto.randomUUID();
                fetch(postQuery, {
                     method: "POST",
                     headers: {
