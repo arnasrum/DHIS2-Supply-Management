@@ -11,7 +11,7 @@ import {
     TableRowHead
   } from "@dhis2/ui";
 
-const request = {
+const requestCommodities = {
     request0: {
       resource: "/dataSets/ULowA8V3ucd",
       params: {
@@ -20,20 +20,38 @@ const request = {
     }
   }
 
-export function CommodityTable(props) {
-    const { loading, error, data } = useDataQuery(request);
+const requestValues = {
+    request0: {
+        resource: "/dataValueSets",
+        params: {
+            orgUnit: "xQIU41mR69s",
+            period: "202310",
+            dataSet: "ULowA8V3ucd"
+        }
+    }
+}
 
-    if (loading) {
+export function CommodityTable(props) {
+    const { loading: loadingVal, error: errorVal, data: dataVal } = useDataQuery(requestValues);
+    const { loading: loadingCom, error: errorCom, data: dataCom } = useDataQuery(requestCommodities);
+
+    const values = new Map();
+    if (dataVal) dataVal.request0.dataValues.forEach((el) => {
+        // Fetch the first element as it is the newest in the list
+        if (!values.has(el.dataElement)) values.set(el.dataElement, parseInt(el.value))
+    });
+
+    if (loadingCom || loadingVal) {
         return <CircularLoader />;
     }
 
     function CommodityRows() {
-        if (data) {
-            return data.request0.dataSetElements.map((el) => {
+        if (dataCom) {
+            return dataCom.request0.dataSetElements.map((el) => {
                 const tokens = el.dataElement.displayName.split(" ")
                 return <TableRow>
                         <TableCell>{tokens[tokens.length-1]}</TableCell>
-                        <TableCell>?</TableCell>
+                        <TableCell>{values.get(el.dataElement.id)}</TableCell>
                     </TableRow>
             });
         }
