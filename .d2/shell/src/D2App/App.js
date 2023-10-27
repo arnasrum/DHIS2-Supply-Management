@@ -1,8 +1,11 @@
 import React from "react";
 import classes from "./App.module.css";
-import { Navigation } from "./navigation/Navigation.js";
-import { DispenseCommodity } from "./dispenseCommodity/DispenseCommodity";
 import { RequestCommodity } from "./requestCommodity/RequestCommodity";
+import { Navigation } from "./navigation/Navigation.js";
+import { CommodityTable } from "./commodityTable/CommodityTable.js";
+import { DispenseCommodity } from './dispenseCommodity/DispenseCommodity';
+import { UpdateCommodity } from './updateCommodity/UpdateCommodity';
+import { StoreManagement } from './storeManagement/StoreManagement';
 import { useState } from "react";
 function MyApp() {
   const [activePage, setActivePage] = useState("Browse");
@@ -18,6 +21,6 @@ function MyApp() {
     activePageHandler: activePageHandler
   })), /*#__PURE__*/React.createElement("div", {
     className: classes.right
-  }, activePage === "DispenseCommodity" && /*#__PURE__*/React.createElement(DispenseCommodity, null), activePage === "RequestCommodity" && /*#__PURE__*/React.createElement(RequestCommodity, null)));
+  }, activePage === "CommodityTable" && /*#__PURE__*/React.createElement(CommodityTable, null), activePage === "DispenseCommodity" && /*#__PURE__*/React.createElement(DispenseCommodity, null), activePage === "RequestCommodity" && /*#__PURE__*/React.createElement(RequestCommodity, null), activePage === "UpdateCommodity" && /*#__PURE__*/React.createElement(UpdateCommodity, null), activePage === "StoreManagement" && /*#__PURE__*/React.createElement(StoreManagement, null)));
 }
 export default MyApp;
