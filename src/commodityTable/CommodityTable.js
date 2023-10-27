@@ -49,20 +49,18 @@ export function CommodityTable(props) {
         if (dataCom) {
             return dataCom.request0.dataSetElements.map((el) => {
                 const tokens = el.dataElement.displayName.split(" ").slice(2)
-                return <TableRow>
+                return (
+                    <TableRow>
                         <TableCell>{tokens.join(" ")}</TableCell>
                         <TableCell>{values.get(el.dataElement.id)}</TableCell>
                     </TableRow>
-            });
+            )});
         }
     }
 
     return (
         <>
             <h1>Commodity Table</h1>
-            <SingleSelectField label="Choose category">
-                <SingleSelectOption label="Live-Saving commodities" value="1" />
-            </SingleSelectField>
             <Table>
                 <TableHead>
                     <TableRowHead>
