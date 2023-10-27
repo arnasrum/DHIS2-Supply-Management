@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDataQuery } from "@dhis2/app-runtime";
 import { DropDown } from "../components/Dropdown";
+import { ClinicStock } from "./ClinicStock";
 
 import {
   ReactFinalForm,
@@ -8,6 +9,7 @@ import {
   Button,
   CircularLoader,
   composeValidators,
+  DataTableRow,
 } from "@dhis2/ui";
 import {
   Table,
@@ -27,11 +29,14 @@ const request = {
     },
   },
   clinics: {
-    resource: "/organisationUnits?id=xQIU41mR69s",
+    resource: "/organisationUnits?id=g5ptsn0SFX8",
     params: {
       fields: "displayName",
     },
   },
+  parentOrg: {
+    resource: "/organisationUnits/xQIU41mR69s?fields=parent"
+  }
 };
 
 export function RequestCommodity(props) {
@@ -94,35 +99,38 @@ export function RequestCommodity(props) {
   if (loading) {
     return <CircularLoader />;
   }
-
-  return (
-    <>
-      <h1>Request Commodity</h1>
-      <p>
-        Here you can request commodities from nearby clinics who have the
-        requested commodity in stock.
-      </p>
-      <ReactFinalForm.Form onSubmit={onSubmit}>
-        {({ handleSubmit }) => (
-          <form onSubmit={handleSubmit} autoComplete="off">
-            <DropDown data={data.commodities} />
-            <Button type="submit" primary>
-              Request
-            </Button>
-          </form>
+  if (data) {
+    console.log("fetched", data);
+    return (
+      <>
+        <h1>Request Commodity</h1>
+        <ClinicStock parentOrgID={data.parentOrg.parent.id}/>
+        <p>
+          Here you can request commodities from nearby clinics who have the
+          requested commodity in stock.
+        </p>
+        <ReactFinalForm.Form onSubmit={onSubmit}>
+          {({ handleSubmit }) => (
+            <form onSubmit={handleSubmit} autoComplete="off">
+              <DropDown data={data.commodities} />
+              <Button type="submit" primary>
+                Request
+              </Button>
+            </form>
+          )}
+        </ReactFinalForm.Form>
+        <br />
+        {commodityData.length > 0 && (
+          <div>
+            <h2>Fetched Data</h2>
+            <ul>
+              {commodityData.map((dataValue) => (
+                <li key={dataValue.id}>{dataValue.value}</li>
+              ))}
+            </ul>
+          </div>
         )}
-      </ReactFinalForm.Form>
-      <br />
-      {commodityData.length > 0 && (
-        <div>
-          <h2>Fetched Data</h2>
-          <ul>
-            {commodityData.map((dataValue) => (
-              <li key={dataValue.id}>{dataValue.value}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </>
-  );
+      </>
+    );
+  }
 }
