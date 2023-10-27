@@ -4,7 +4,7 @@ import { Menu, MenuItem } from "@dhis2/ui";
 export function Navigation(props) {
   return (
     <Menu>
-      <MenuItem 
+      <MenuItem
         label="Commodity Table"
         active={props.activePage == "CommodityTable"}
         onClick={() => props.activePageHandler("CommodityTable")}

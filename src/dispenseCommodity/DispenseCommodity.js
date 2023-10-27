@@ -64,7 +64,7 @@ export function DispenseCommodity(props) {
     alert(
       formInput.dispensedAmount +
         " " +
-        formInput.commodity +
+        formInput.commodity.split("&")[1] +
         " dispensed to " +
         formInput.dispensedTo
     );
