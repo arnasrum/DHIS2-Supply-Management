@@ -15,11 +15,11 @@ export function OrgField(props) {
             <>
             <ReactFinalForm.Field
                 component={SingleSelectFieldFF}
-                name="orgID"
+                name="org"
                 label="Request Org: "
                 placeholder="Org"
                 options={props.orgs.map((item) => {
-                    return {"label":item.id, "value": item.id}
+                    return {"label":item.orgName.name, "value": item.id.toString() + "-" + item.orgName.name}
                 })}
             >
             </ReactFinalForm.Field>

@@ -14,6 +14,7 @@ export function ClinicTable(props) {
     const commodity = props.commodity;
     const values = props.values;
     const setValues = props.setValues;
+    const orgs = props.orgs;
     //const [values, setValues] = useState([]); // Use state to store the values
 
 
@@ -22,18 +23,23 @@ export function ClinicTable(props) {
             return;
         }
 
-        const fetchPromises = props.orgs.map((item) => {
+        const fetchPromises = orgs.map(async (item) => {
             let query = "http://localhost:9999/api/dataValues.json?";
             query = query + "ou=" + item.id;
             query = query + "&pe=202310";
             query = query + "&co=J2Qf1jtZuj8";
             query = query + "&de=" + commodity;
 
-            // Return the fetch promise
+            const orgName = {};
+            const orgQuery = `http://localhost:9999/api/organisationUnits/${item.id}?fields=name`;
+            const namePromise = fetch(orgQuery);
+            const name = await namePromise.then(response => response.json())
+
             return fetch(query)
                 .then((response) => response.json())
                 .then((response) => ({
                     id: item.id,
+                    orgName: name,
                     value: response[0],
                 }));
         });
@@ -60,7 +66,7 @@ export function ClinicTable(props) {
                     {values.map((item) => {
                         return (
                             <TableRow key={item.id}>
-                                <TableCell>{item.id}</TableCell>
+                                <TableCell>{item.orgName.name}</TableCell>
                                 <TableCell>{item.value}</TableCell>
                             </TableRow>
                         );

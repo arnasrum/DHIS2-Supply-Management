@@ -10,7 +10,6 @@ export function RequestTable(props) {
     const orgs = props.orgs;
 
     function onSubmit(formInput) {
-        console.log("formInp", formInput);
         const date = new Date();
         const postQuery = "http://localhost:9999/api/dataStore/IN5320-27-requests/" + crypto.randomUUID();
         fetch(postQuery, {
@@ -19,11 +18,12 @@ export function RequestTable(props) {
                 "Content-type": "application/json"
             },
             body: JSON.stringify({
+                commodityID: props.commodity,
+                requestedClinic: formInput.org.split("-")[1],
                 date: date.toISOString(), 
                 amount: formInput.requestAmount,
                 requestBy: props.usersOrg,
-                requestedTo: formInput.orgID,
-                commodityID: props.commodity
+                requestedTo: formInput.org.split("-")[0],
                 })
             })
             .then(response => response.json())
@@ -37,8 +37,8 @@ export function RequestTable(props) {
             <ReactFinalForm.Form onSubmit={onSubmit}>
                 {({handleSubmit}) => (
                     <form onSubmit={handleSubmit}>
-                        <AmountField/>
                         <OrgField orgs={orgs}/>
+                        <AmountField/>
                        <Button type="submit"primary>Submit</Button>
                     </form>
                 )} 

@@ -22,7 +22,6 @@ const request = {
     },
 }
 
-
 export function CommoditySelect(props) {
 
     const commodity = props.commodity;
