@@ -1,10 +1,10 @@
 import React from "react";
 import classes from "./App.module.css";
 
-import { Navigation } from "./navigation/Navigation.js";
-import { DispenseCommodity } from "./dispenseCommodity/DispenseCommodity";
-import { UpdateCommodity } from "./updateCommodity/UpdateCommodity";
-import { StoreManagment } from "./storeManagment/StoreManagment";
+import { Navigation } from "./navigation/Navigation.js"
+import { CommodityTable } from "./commodityTable/CommodityTable.js"
+import { DispenseCommodity } from './dispenseCommodity/DispenseCommodity'
+import { UpdateCommodity } from './updateCommodity/UpdateCommodity'
 import { useState } from "react";
 
 function MyApp() {
@@ -22,6 +22,7 @@ function MyApp() {
         />
       </div>
       <div className={classes.right}>
+        {activePage === "CommodityTable" && <CommodityTable />}
         {activePage === "DispenseCommodity" && <DispenseCommodity />}
         {activePage === "UpdateCommodity" && <UpdateCommodity />}
         {activePage === "StoreManagment" && <StoreManagment />}
