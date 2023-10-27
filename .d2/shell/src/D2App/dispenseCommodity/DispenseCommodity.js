@@ -1,6 +1,6 @@
 import React from "react";
 import { useDataQuery } from "@dhis2/app-runtime";
-import { ReactFinalForm, CircularLoader, Button } from '@dhis2/ui';
+import { ReactFinalForm, CircularLoader, Button } from "@dhis2/ui";
 import { AmountField } from "./AmountField";
 import { CommodityField } from "./CommodityField";
 import { NameField } from "./NameField";
@@ -59,6 +59,7 @@ export function DispenseCommodity(props) {
     query = query + "&pe=" + datelist[0] + datelist[1];
     query = query + "&ou=xQIU41mR69s";
     query = query + "&co=J2Qf1jtZuj8";
+    alert(formInput.dispensedAmount + " " + formInput.commodity.split("&")[1] + " dispensed to " + formInput.dispensedTo);
     fetch(query).then(response => response.json()).then(data => {
       const newStock = parseInt(data[0]) - formInput.dispensedAmount;
       if (newStock < 0) {
