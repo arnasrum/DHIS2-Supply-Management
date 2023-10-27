@@ -50,12 +50,9 @@ export function CommoditySelect(props) {
                             value={item.dataElement.id}/>
                     })}
                 </SingleSelect>
-               
             );
         }
     }
-
-
     function handleChange(item) {
         console.log(item);
         setCommodity(item.selected);
