@@ -41,7 +41,13 @@ export function CommoditySelect(props) {
 
         if (data) {
             return(
-                <SingleSelect onChange={(selected) => handleChange(selected)} selected={commodity}>
+                <label>
+                    Required Commodity:
+                <SingleSelect 
+                onChange={(selected) => handleChange(selected)} 
+                selected={commodity}
+                placeholder="Select required commodity"
+                >
                     {data.commodityFieldRequest.dataSetElements.map((item) => {
                         const name = item.dataElement.displayName.split(" - ")[1];
                         return <SingleSelectOption 
@@ -50,11 +56,11 @@ export function CommoditySelect(props) {
                             value={item.dataElement.id}/>
                     })}
                 </SingleSelect>
+                </label>
             );
         }
     }
     function handleChange(item) {
-        console.log(item);
         setCommodity(item.selected);
     }
 

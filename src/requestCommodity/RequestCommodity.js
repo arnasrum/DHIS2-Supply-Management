@@ -17,6 +17,9 @@ const request = {
 }
 
 export function RequestCommodity(props) {
+
+    // Replace with logged in users org 
+    const myOrg = "xQIU41mR69s";
     const [orgValue, setOrgValue] = useState([]);
     const [commodity, setCommodity] = useState("");    
 
@@ -33,7 +36,7 @@ export function RequestCommodity(props) {
             <>
                 <CommoditySelect commodity={commodity} setCommodity={setCommodity}/>                
                 <ClinicTable orgs={data.request0.children} commodity={commodity} values={orgValue} setValues={setOrgValue}/>
-                <RequestTable orgs={orgValue}/>
+                <RequestTable orgs={orgValue} commodity={commodity} usersOrg={myOrg}/>
             </>
         );
     }

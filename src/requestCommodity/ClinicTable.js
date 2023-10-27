@@ -49,7 +49,6 @@ export function ClinicTable(props) {
     }, [commodity, props.orgs]);
     return (
         <>
-            <h1>Clinic Table</h1>
             <Table>
                 <TableHead>
                     <TableRowHead>

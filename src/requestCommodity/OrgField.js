@@ -10,7 +10,6 @@ import {ReactFinalForm,
 
 export function OrgField(props) {
 
-    console.log("orgs", props.orgs)
     if(props.orgs) {
         return(
             <>
@@ -23,8 +22,6 @@ export function OrgField(props) {
                     return {"label":item.id, "value": item.id}
                 })}
             >
-
-
             </ReactFinalForm.Field>
             </>
         );
