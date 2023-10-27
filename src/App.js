@@ -5,6 +5,7 @@ import { Navigation } from "./navigation/Navigation.js"
 import { CommodityTable } from "./commodityTable/CommodityTable.js"
 import { DispenseCommodity } from './dispenseCommodity/DispenseCommodity'
 import { UpdateCommodity } from './updateCommodity/UpdateCommodity'
+import { StoreManagement } from './storeManagement/StoreManagement'
 import { useState } from "react";
 
 function MyApp() {
@@ -25,7 +26,7 @@ function MyApp() {
         {activePage === "CommodityTable" && <CommodityTable />}
         {activePage === "DispenseCommodity" && <DispenseCommodity />}
         {activePage === "UpdateCommodity" && <UpdateCommodity />}
-        {activePage === "StoreManagment" && <StoreManagment />}
+        {activePage === "StoreManagement" && <StoreManagement />}
       </div>
     </div>
   );
