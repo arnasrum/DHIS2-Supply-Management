@@ -1,6 +1,7 @@
 import React from "react";
 import classes from "./App.module.css";
 
+import { RequestCommodity } from "./requestCommodity/RequestCommodity";
 import { Navigation } from "./navigation/Navigation.js"
 import { CommodityTable } from "./commodityTable/CommodityTable.js"
 import { DispenseCommodity } from './dispenseCommodity/DispenseCommodity'
@@ -25,6 +26,7 @@ function MyApp() {
       <div className={classes.right}>
         {activePage === "CommodityTable" && <CommodityTable />}
         {activePage === "DispenseCommodity" && <DispenseCommodity />}
+        {activePage === "RequestCommodity" && <RequestCommodity />}
         {activePage === "UpdateCommodity" && <UpdateCommodity />}
         {activePage === "StoreManagement" && <StoreManagement />}
       </div>

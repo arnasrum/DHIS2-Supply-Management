@@ -19,21 +19,7 @@
 .dataset {
   flex-basis: 50%;
 }
-
 .container2 {
   display: flex;
   justify-content: row;
-
-.storemanagement {
-  display: flex;
-  flex-direction: column;
-}
-  
-.table {
-  flex-basis: 50%;
-}
-  
-.submitbutton {
-  margin-top: 16px;
-  margin-bottom: 16px;
 }
