@@ -99,7 +99,8 @@ export function StoreManagment() {
       className: classes.table
     }, /*#__PURE__*/React.createElement(TableHead, null, /*#__PURE__*/React.createElement(TableRowHead, null, /*#__PURE__*/React.createElement(TableCellHead, null, "ID"), /*#__PURE__*/React.createElement(TableCellHead, null, "Display Name"), /*#__PURE__*/React.createElement(TableCellHead, null, "Current Amount"), /*#__PURE__*/React.createElement(TableCellHead, null, "Amount"))), /*#__PURE__*/React.createElement(TableBody, null, rows)), /*#__PURE__*/React.createElement(Button, {
       className: classes.submitbutton,
-      onClick: onSubmit
+      onClick: onSubmit,
+      primary: true
     }, "Submit"));
   }
 }

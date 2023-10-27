@@ -152,7 +152,7 @@ export function StoreManagment() {
           </TableHead>
           <TableBody>{rows}</TableBody>
         </Table>
-        <Button className={classes.submitbutton} onClick={onSubmit}>
+        <Button className={classes.submitbutton} onClick={onSubmit} primary>
           Submit
         </Button>
       </div>
