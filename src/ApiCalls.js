@@ -1,7 +1,7 @@
 import React from "react";
 import { useDataQuery, useDataMutation } from "@dhis2/app-runtime"; 
 import { CircularLoader } from "@dhis2/ui";
-import { requestCommodities, dataMutationQuery, requestCommodityValues } from "./apiConstants";
+import { requestCommodities, dataMutationQuery, requestCommodityValues, requestCategoryOptionCombos } from "./apiConstants";
 
 const getCommoditiesNames = () => {
     /*
@@ -14,19 +14,15 @@ const getCommoditiesNames = () => {
     if (loading) {return <CircularLoader />}
     // when data is pressent fetching commodities
     if (data) {
-        // ekstract elems and remove prefix of name
-        const elems = [];
-        data.commodities.dataSetElements.map((elem) => {
+        // ekstract elems and remove prefix of name and sort
+        return data.commodities.dataSetElements.map((elem) => {
             const names = elem.dataElement.displayName.split("- ")[1];
-            elems.push({ "name": names, "id": elem.dataElement.id });
-        });
-        // sort alphabetically
-        elems.sort(function(a, b){
-            if (a.name > b.name) {return 1}
-            if (a.name < b.name) {return -1}
+            return { "displayName": names, "id": elem.dataElement.id }
+        }).sort(function(a, b){
+            if (a.displayName > b.displayName) {return 1}
+            if (a.displayName < b.displayName) {return -1}
             return 0
         })
-        return elems
     }
 }
 
@@ -44,33 +40,51 @@ const getCommoditiesValues = (period=null, orgUnit="xQIU41mR69s") => {
     if (loading) {return <CircularLoader />}
     // when data is pressent fetching commodities
     if (data) {
-        const cals = {}
-        let prev = null
-        data.comVals.dataValues.forEach((elem) => {
-            if (!cals.hasOwnProperty(elem.dataElement)) {
-                cals[elem.dataElement] = elem.value
-            }
-        })
-        return cals
+        return data.comVals.dataValues
     }
 }
 
-const getCommoditiesValuesNames = (period=null, orgUnit="xQIU41mR69s") => {
+const getCategoryOptionCombos = () => {
+    const { loading, error, data } = useDataQuery(requestCategoryOptionCombos);
+    if (error) {return <span>ERROR: {error.message}</span>}
+    // when loding fetching commodities
+    if (loading) {return <CircularLoader />}
+    // when data is pressent fetching commodities
+    if (data) {
+        console.log(data.comVals.categoryOptionCombos)
+        return data.comVals.categoryOptionCombos
+    }
+}
+
+const getCommoditiesData = (period=null, orgUnit="xQIU41mR69s") => {
     /*
-    gets the names, values and id of commodities
+    gets the names, id, values, catOptCom, catOptComName of commodities
     */
-    const coms = getCommodities()
+    const coms = getCommoditiesNames()
     const vals = getCommoditiesValues()
+    const catOpt = getCategoryOptionCombos()
     console.log("test")
     if (!(coms instanceof Array)){
         return coms
     }
-    if (!(vals.constructor instanceof Object)){
+    if (!(catOpt instanceof Array)){
+        return catOpt
+    }
+    if (!(vals instanceof Array)){
         return vals
     }
-    return coms.map((elem) => {
-        console.log("s")
-        return { "name": elem["name"], "id": elem["id"], "value": vals[elem["id"]]}
+    return vals.map((elem) => {
+        return { 
+            "DataElementName": coms.filter((x) => {return x.id === elem.dataElement})[0].displayName, 
+            "DataElement": elem.dataElement, 
+            "value": elem.value, 
+            "categoryOptionCombos": elem.categoryOptionCombo,
+            "categoryOptionCombosName": catOpt.filter((x) => {return x.id === elem.categoryOptionCombo})[0].displayName
+        }
+    }).sort(function(a, b){
+        if (a.DataElementName > b.DataElementName) {return 1}
+        if (a.DataElementName < b.DataElementName) {return -1}
+        return 0
     })
 }
 
@@ -99,4 +113,4 @@ const changeCommodityCount = (mutator, value, dataElement, period = null, orgUni
     });
 }
 
-export { changeCommodityCount, getCommoditiesNames, changeCommodityCountMutator, getCommoditiesValues, getCommoditiesValuesNames }
+export { changeCommodityCount, getCommoditiesNames, changeCommodityCountMutator, getCommoditiesValues, getCategoryOptionCombos, getCommoditiesData }
