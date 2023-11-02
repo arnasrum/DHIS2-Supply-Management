@@ -1,18 +1,14 @@
 import React from "react";
-import { useDataQuery, useDataMutation } from "@dhis2/app-runtime";
+import { useDataQuery, useDataMutation } from "@dhis2/app-runtime"; 
 import { CircularLoader } from "@dhis2/ui";
-import { dataMutationQuery, requestComValues, requestCommodities } from "./apiConstants";
+import { requestCommodities, dataMutationQuery } from "./apiConstants";
 
 const getCommodities = () => {
     const { loading, error, data } = useDataQuery(requestCommodities);
     // on error fetching commodities
-    if (error) {
-        return <span>ERROR: {error.message}</span>;
-    }
+    if (error) {return <span>ERROR: {error.message}</span>}
     // when loding fetching commodities
-    if (loading) {
-        return <CircularLoader />;
-    }
+    if (loading) {return <CircularLoader />}
     // when data is pressent fetching commodities
     if (data) {
         // ekstract elems and remove prefix of name
@@ -31,4 +27,22 @@ const getCommodities = () => {
     }
 }
 
-export default getCommodities
+const changeCommodityCountMutator = () => {
+    const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery);
+    return mutate
+}
+
+const changeCommodityCount = (mutator, value, dataElement, period = null, orgUnit = "xQIU41mR69s") => {
+    if (!period) {
+        const date = new Date().toISOString().split("-");
+        period = date[0] + date[1]
+    }
+    mutator({
+        value: value,
+        dataElement: dataElement,
+        period: period,
+        orgUnit: orgUnit,
+    });
+}
+
+export { changeCommodityCount, getCommodities, changeCommodityCountMutator }
