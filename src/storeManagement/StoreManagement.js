@@ -17,6 +17,7 @@ import {
   hasValue,
   number,
   createMinNumber,
+  AlertBar,
 } from "@dhis2/ui";
 import {
   Table,
@@ -42,6 +43,8 @@ export function StoreManagement() {
   } = useDataQuery(requestCommodities);
   //Data mutation
   const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showFail, setShowFail] = useState(false);
 
   // State for input values in the form
   const [inputValues, setInputValues] = useState({});
@@ -68,14 +71,19 @@ export function StoreManagement() {
         getCommodityValueFromAPI(element)
           .then((currentValue) => {
             const newValue = parseInt(currentValue) + parseInt(value);
+            console.log("newValue", newValue);
             mutate({
               value: newValue, // Add the input value to the existing value and update it
               dataElement: element,
               period: "202310",
               orgUnit: "xQIU41mR69s",
             });
+            setShowSuccess(true);
           })
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            console.error(err);
+            setShowFail(true);
+          });
       }
     }
   }
@@ -107,8 +115,14 @@ export function StoreManagement() {
           the amount you received.
         </p>
         <ReactFinalForm.Form onSubmit={onSubmit}>
-          {({ handleSubmit }) => (
-            <form onSubmit={handleSubmit} autoComplete="off">
+          {({ handleSubmit, form }) => (
+            <form
+              onSubmit={async (event) => {
+                await handleSubmit(event);
+                form.reset();
+              }}
+              autoComplete="off"
+            >
               <Table className={classes.table}>
                 <TableHead>
                   <TableRowHead>
@@ -163,6 +177,16 @@ export function StoreManagement() {
             </form>
           )}
         </ReactFinalForm.Form>
+        {showSuccess && (
+          <AlertBar duration={8000} permanent success>
+            Successfully restocked
+          </AlertBar>
+        )}
+        {showFail && (
+          <AlertBar duration={8000} critical permanent>
+            Failed to restock
+          </AlertBar>
+        )}
       </div>
     );
   }
