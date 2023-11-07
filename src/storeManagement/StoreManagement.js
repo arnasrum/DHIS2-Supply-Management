@@ -46,32 +46,36 @@ export function StoreManagement() {
   // State for input values in the form
   const [inputValues, setInputValues] = useState({});
 
-  // Function to handle input change
-  function handleInputChange(dataElement, value) {
-    console.log("jellu");
-    setInputValues((prevInputValues) => ({
-      ...prevInputValues,
-      [dataElement]: value,
-    }));
+  // Helper function to update the commodity values
+  async function getCommodityValueFromAPI(commodityId) {
+    const query = `http://localhost:9999/api/dataValues.json?de=${commodityId}&pe=202310&ou=xQIU41mR69s`;
+    try {
+      const response = await fetch(query);
+      const result = await response.json();
+      return result;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   // Function to handle form submit
-  function onSubmit() {
-    console.log("inputValues", inputValues);
-    alert("Commodity stock updated successfully!");
-    // Send mutation query for each input value
-    for (const dataElement in inputValues) {
-      if (inputValues.hasOwnProperty(dataElement)) {
-        const value = parseInt(inputValues[dataElement]);
-        if (!isNaN(value)) {
-          mutate({
-            value,
-            dataElement,
-            period: "202310",
-            orgUnit: "xQIU41mR69s",
-          });
-          console.log("value", value);
-        }
+  function onSubmit(formInput) {
+    console.log("inputValues", formInput);
+    for (const element in formInput) {
+      const value = parseInt(formInput[element]);
+      if (!isNaN(value)) {
+        // Fetch the current value of the commodity with id = element
+        getCommodityValueFromAPI(element)
+          .then((currentValue) => {
+            const newValue = parseInt(currentValue) + parseInt(value);
+            mutate({
+              value: newValue, // Add the input value to the existing value and update it
+              dataElement: element,
+              period: "202310",
+              orgUnit: "xQIU41mR69s",
+            });
+          })
+          .catch((err) => console.error(err));
       }
     }
   }
@@ -95,45 +99,6 @@ export function StoreManagement() {
 
   // If data is fetched, create a table row for each commodity
   if (dataCom) {
-    const rows = dataCom.commodities.dataSetElements
-      .map((dataset) => ({
-        id: dataset.dataElement.id,
-        displayName: dataset.dataElement.displayName.replace(
-          "Commodities - ",
-          ""
-        ),
-      }))
-      .sort((a, b) => a.displayName.localeCompare(b.displayName))
-      .map((dataset) => (
-        <TableRow key={dataset.id}>
-          <TableCell>{dataset.id}</TableCell>
-          <TableCell>{dataset.displayName}</TableCell>
-          <TableCell>{values.get(dataset.id)}</TableCell>
-          <TableCell>
-            <ReactFinalForm.Form onSubmit={onSubmit}>
-              {({ handleSubmit }) => (
-                <form onSubmit={handleSubmit} autoComplete="off">
-                  <ReactFinalForm.Field
-                    name="value"
-                    id={dataset.id}
-                    component={InputFieldFF}
-                    validate={composeValidators(
-                      hasValue,
-                      number,
-                      createMinNumber(0)
-                    )}
-                    onChange={(event) =>
-                      handleInputChange(dataset.id, event.target.value)
-                    }
-                    value={inputValues[dataset.id] || ""}
-                  />
-                </form>
-              )}
-            </ReactFinalForm.Form>
-          </TableCell>
-        </TableRow>
-      ));
-
     return (
       <div className={classes.storemanagement}>
         <h1>Store Management</h1>
@@ -141,20 +106,63 @@ export function StoreManagement() {
           Update stock count balance when receiving the monthly delivery, enter
           the amount you received.
         </p>
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRowHead>
-              <TableCellHead>ID</TableCellHead>
-              <TableCellHead>Display Name</TableCellHead>
-              <TableCellHead>Current Amount</TableCellHead>
-              <TableCellHead>Amount</TableCellHead>
-            </TableRowHead>
-          </TableHead>
-          <TableBody>{rows}</TableBody>
-        </Table>
-        <Button className={classes.submitbutton} onClick={onSubmit} primary>
-          Submit
-        </Button>
+        <ReactFinalForm.Form onSubmit={onSubmit}>
+          {({ handleSubmit }) => (
+            <form onSubmit={handleSubmit} autoComplete="off">
+              <Table className={classes.table}>
+                <TableHead>
+                  <TableRowHead>
+                    <TableCellHead>Display Name</TableCellHead>
+                    <TableCellHead>Cell Id</TableCellHead>
+                    <TableCellHead>Current Amount</TableCellHead>
+                    <TableCellHead>Amount</TableCellHead>
+                  </TableRowHead>
+                </TableHead>
+                <TableBody>
+                  {dataCom &&
+                    dataCom.commodities.dataSetElements
+                      .map((dataset) => ({
+                        id: dataset.dataElement.id,
+                        displayName: dataset.dataElement.displayName.replace(
+                          "Commodities - ",
+                          ""
+                        ),
+                      }))
+                      .sort((a, b) =>
+                        a.displayName.localeCompare(b.displayName)
+                      )
+                      .map((dataset) => (
+                        <TableRow key={dataset.id}>
+                          <TableCell>{dataset.displayName}</TableCell>
+                          <TableCell>{dataset.id}</TableCell>
+                          <TableCell>{values.get(dataset.id)}</TableCell>
+                          <TableCell>
+                            <ReactFinalForm.Field
+                              name={dataset.id}
+                              component={InputFieldFF}
+                              validate={composeValidators(
+                                number,
+                                createMinNumber(0)
+                              )}
+                              onChange={(event) =>
+                                handleInputChange(
+                                  dataset.id,
+                                  event.target.value
+                                )
+                              }
+                              value={inputValues[dataset.id] || ""}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                </TableBody>
+              </Table>
+              <Button className={classes.submitbutton} type="submit" primary>
+                Submit
+              </Button>
+            </form>
+          )}
+        </ReactFinalForm.Form>
       </div>
     );
   }
