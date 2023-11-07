@@ -1,7 +1,7 @@
 import React from "react";
 import { useDataQuery, useDataMutation } from "@dhis2/app-runtime"; 
 import { CircularLoader } from "@dhis2/ui";
-import { requestCommodities, dataMutationQuery, requestCommodityValues, requestCategoryOptionCombos } from "./apiConstants";
+import { requestCommodities, dataMutationQuery, requestCommodityValues, requestCategoryOptionCombos, requestUser, requestOrgUnits } from "./apiConstants";
 
 const getCommoditiesNames = () => {
     /*
@@ -174,6 +174,57 @@ const getCommoditiesData = (period=null, orgUnit="xQIU41mR69s") => {
     return [ret, refetch]
 }
 
+
+const fetchOrgUnit = () => {
+    /*
+    fetch other organisations id
+
+    each element is a map with these values:
+        id: the id of the organisation
+
+    returns:
+        list:
+            ret: one of three options:
+                loading: a circular loader
+                error: an error message
+                data: the result of the fetch represented as an array of maps
+            refetch: a callable function that refetches the data
+    */
+    const { loading, error, data, refetch } = useDataQuery(requestOrgUnits);
+    let ret
+    // set the result 
+    if (error) {ret = <span>ERROR: {error.message}</span>}
+    if (loading) {ret = <CircularLoader />}
+    if (data) {
+        ret = data.orgRequest.children}
+    return [ret, refetch]
+}
+
+const fetchUser = () => {
+    /*
+    fetch the users id and name
+
+    one element is a map with these values:
+        id: the id of the user
+        name: the name of the user
+
+    returns:
+        list:
+            ret: one of three options:
+                loading: a circular loader
+                error: an error message
+                data: the result of the fetch represented as an array of maps
+            refetch: a callable function that refetches the data
+    */
+    const { loading, error, data, refetch } = useDataQuery(requestUser);
+    let ret
+    // set the result 
+    if (error) {ret = <span>ERROR: {error.message}</span>}
+    if (loading) {ret = <CircularLoader />}
+    if (data) {ret = data}
+    return [ret, refetch]
+}
+
 const changeCommodityCountMutator = () => {
     /*
     use data mutation hook
@@ -193,11 +244,11 @@ const changeCommodityCountMutator = () => {
 const changeCommodityCount = (mutator, value, dataElement, refetch = null, period = null, orgUnit = "xQIU41mR69s", categoryOptionCombo = "HllvX50cXC0") => {
     /*
     uses a mutator to do a post query
-
+    
     args:
-        mutator: the muatator data combo from the corresponding function
-        value: the value to be changed
-        dataElement: the id of the commodity to be changed
+    mutator: the muatator data combo from the corresponding function
+    value: the value to be changed
+    dataElement: the id of the commodity to be changed
         refetch (default: null): a refetch function which gets called after the post
         period (default: null): a perdiod, current period will be used if not provided
         orgUnit (default: "xQIU41mR69s"): org unit posting
@@ -223,4 +274,4 @@ const changeCommodityCount = (mutator, value, dataElement, refetch = null, perio
 }
 
 // export functions so they ar accesible elsewere 
-export { changeCommodityCount, changeCommodityCountMutator, getCommoditiesData }
+export { changeCommodityCount, changeCommodityCountMutator, getCommoditiesData, fetchOrgUnit, fetchUser }

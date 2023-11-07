@@ -55,3 +55,21 @@ export const requestCategoryOptionCombos = {
     },
   },
 };
+
+export const requestUser = {
+  meRequest: {
+    resource: "/me.json",
+    params: {
+      fields: "id,name,organisationUnits",
+    },
+  },
+}
+
+export const requestOrgUnits = {
+  orgRequest: {
+      resource: "/organisationUnits/g5ptsn0SFX8",
+      params: {
+          fields: "children"
+      }
+  },
+}
