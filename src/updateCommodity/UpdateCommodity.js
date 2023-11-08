@@ -9,7 +9,7 @@ import {
   createMinNumber,
   Button,
 } from "@dhis2/ui";
-import { changeCommodityCount, changeCommodityCountMutator } from "../ApiCalls";
+import { changeCommodityCount, changeCommodityCountMutator } from "../logicLayer/ApiMuatations";
 
 export function UpdateCommodity(props) {
 
@@ -28,7 +28,8 @@ export function UpdateCommodity(props) {
   // on submit
   function submit(formInput) {
     // alert("Updated amount to " + formInput.value);
-    changeCommodityCount(mutator, formInput.value, formInput.dataElement, props.refetch)
+    console.log(mutator[1])
+    changeCommodityCount(mutator, formInput.value, formInput.dataElement, props.refetch, undefined, undefined, "rQLFnNXXIL0")
   }
 
   // makes a list of all the options based on a dataset of commodities
