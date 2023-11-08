@@ -9,41 +9,29 @@ import {
   createMinNumber,
   Button,
 } from "@dhis2/ui";
-import { changeCommodityCount, changeCommodityCountMutator } from "../logicLayer/ApiMuatations";
+import { changeCommodityCount, getSingleChangeMutator } from "../logicLayer/ApiMuatations";
+import { getCommoditiesNames, getCommoditiesValues } from '../logicLayer/ApiCalls';
 
 export function UpdateCommodity(props) {
-
-  const mutator = changeCommodityCountMutator() 
-  let coms = props.data.reduce((arr, elem) => {
-    if (!(arr.includes(elem.DataElementName))) {arr.push(elem.DataElementName)}
-    return arr
-  }, [])
-  coms = coms.map((elem) => {
-    return {
-      "displayName": elem,
-      "id": props.data.filter((x) => {return x.DataElementName === elem})[0].DataElement
-    }
-  })
+  const mutator = getSingleChangeMutator()
+  console.log(getCommoditiesValues())
 
   // on submit
-  function submit(formInput) {
-    // alert("Updated amount to " + formInput.value);
-    console.log(mutator[1])
-    changeCommodityCount(mutator, formInput.value, formInput.dataElement, props.refetch, undefined, undefined, "rQLFnNXXIL0")
+  async function submit(formInput) {
+    alert("Updated amount to " + formInput.value);
+    changeCommodityCount(mutator, formInput.value, formInput.dataElement, "rQLFnNXXIL0")
   }
 
-  // makes a list of all the options based on a dataset of commodities
-  function getOptions(data) {
-    return data.map((elem) => {
-      return { label: elem.displayName, value: elem.id }
-    });
-  }
-
-    // return form
+  // return form
+  const coms = getCommoditiesNames()
+  if (!(coms instanceof Array)) {return coms}
+  else {
     return (
       <ReactFinalForm.Form onSubmit={submit}>
-        {({ handleSubmit }) => (
-          <form onSubmit={handleSubmit}>
+        {({ handleSubmit, form }) => (
+          <form onSubmit={(event) => {
+            handleSubmit(event).then(() => form.reset())
+          }}>
             <ReactFinalForm.Field
               name="dataElement"
               label="Life-Saving Commodities"
@@ -51,7 +39,7 @@ export function UpdateCommodity(props) {
               placeholder="Select - One"
               validate={composeValidators(hasValue)}
               component={SingleSelectFieldFF}
-              options={getOptions(coms)}
+              options={coms.map((elem) => {return { label: elem.displayName, value: elem.id }})}
               inputWidth="300px"
             />
             <ReactFinalForm.Field
@@ -60,6 +48,7 @@ export function UpdateCommodity(props) {
               placeholder="A number greater than 0"
               inputWidth="300px"
               component={InputFieldFF}
+
               validate={composeValidators(
                 hasValue,
                 integer,
@@ -74,4 +63,5 @@ export function UpdateCommodity(props) {
         )}
       </ReactFinalForm.Form>
     );
+  }
 }

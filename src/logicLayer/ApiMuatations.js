@@ -1,66 +1,80 @@
-import React from "react";
-import { useDataMutation } from "@dhis2/app-runtime"; 
-import { dataMutationQuery } from "./apiConstants";
+import { useDataMutation } from "@dhis2/app-runtime";
+import { getCurPeriod } from "./Helpers";
+import { dataMutationQuery, dataMutationQueryMultiple } from "./apiConstants";
 
-const changeCommodityCountMutator = () => {
-    /*
-    use data mutation hook
-    returns the mutator and its query confimation (data)
-
-    the returned value is intended to be passed directly as mutator to the changeCommodityCount function
-
-    returns:
-        list:
-            mutate: a callable function which mutates the post querry
-            data: query confimation
-    */
-    const [mutate, { loading, error, data }] = useDataMutation(dataMutationQuery);
-    return [mutate, data]
+const getSingleChangeMutator = () => {
+    /**
+     * gets the mutator for the datamutation of one value
+     * 
+     * returns:
+     *     mutate: a function whom on call does the mutation
+     */
+    const [mutate] = useDataMutation(dataMutationQuery);
+    return mutate
 }
 
-const changeCommodityCount = (mutator, 
+const getMultipleChangeMutator = () => {
+    /**
+     * gets the mutator for the datamutation of multiple values
+     * 
+     * returns:
+     *     mutate: a function whom on call does the mutation
+     */
+    const [mutate] = useDataMutation(dataMutationQueryMultiple);
+    return mutate
+}
+
+const changeCommodityCount = (
+    mutator, 
     value, 
-    dataElement, 
-    refetch = null, 
-    period = null, 
-    orgUnit = "xQIU41mR69s", 
-    categoryOptionCombo = "HllvX50cXC0") => {
-    /*
-    uses a mutator to do a post query
-    
-    args:
-        mutator: the muatator data combo from the corresponding function
-        value: the value to be changed
-        dataElement: the id of the commodity to be changed
-        refetch (default: null): a refetch function which gets called after the post
-        period (default: null): a perdiod, current period will be used if not provided
-        orgUnit (default: "xQIU41mR69s"): org unit posting
-        categoryOptionCombo (default "HllvX50cXC0"): category option combo, the default id is for "default" catoegory option
+    dataElement,  
+    categoryOptionCombo = "HllvX50cXC0",
+    period = getCurPeriod(), 
+    orgUnit = "xQIU41mR69s" 
+    ) => {
+    /**
+     * uses a mutator to do a post query
+     *
+     * args:
+     *     mutator: the muatator data combo from the corresponding function
+     *     value: the value to be changed
+     *     dataElement: the id of the commodity to be changed
+     *     categoryOptionCombo (default "HllvX50cXC0"): category option combo, the default id is for "default" catoegory option
+     *     period (default: current period): a perdiod
+     *     orgUnit (default: "xQIU41mR69s"): org unit id
     */
-    // get current period if not provided
-    if (!period) {
-        const date = new Date().toISOString().split("-");
-        period = date[0] + date[1]
-    }
     // do muattion
-    mutator[0]({
+    mutator({
             dataElement: dataElement,
             period: period,
             orgUnit: orgUnit,
             value: value,
             categoryOptionCombo: categoryOptionCombo
     });
-    // reftech after post if provided
-    if (mutator[1] && !(refetch === null)) {
-        console.log("hm")
-        refetch()
-    }
+}
+
+const changeCommodityCountMultiple = (mutator, dataValueArray) => {
+    /**
+     * mutate multiple commodities
+     * args:
+     *     mutator: the muatator data combo from the corresponding function
+     *     dataValueArray: an array which is suposed to contain a list of mapped elements of typr:
+     *         value: the value to be changed
+     *         dataElement: the id of the commodity to be changed
+     *         categoryOptionCombo (default "HllvX50cXC0"): category option combo, the default id is for "default" catoegory option
+     *         period (default: null): a perdiod, current period will be used if not provided
+     *         orgUnit (default: "xQIU41mR69s"): org unit id
+     */
+    mutator({dataValues: dataValueArray})
 }
 
 // TODO:
 //
-// mutate multiple
 // datastore post
-// allow for value fetch in hook
 
-export { changeCommodityCountMutator, changeCommodityCount }
+export { 
+    getSingleChangeMutator, 
+    getMultipleChangeMutator, 
+    changeCommodityCount, 
+    changeCommodityCountMultiple 
+}
