@@ -81,9 +81,9 @@ const getCommoditiesData = (period=getCurPeriod(), orgUnit="xQIU41mR69s") => {
      * each element is a map with these values:
      *     DataElementName: the name of the commodity
      *     DataElement: the id of the commodity
-     *     value: the value of the commodity
-     *     categoryOptionCombos: the category option combo id of the commodity
-     *     categoryOptionCombosName: the category option combo display name of the commodity
+     *     Consumption: the value of the consumption
+     *     QuantityToBeOrdered: the value of the quantity to be ordered
+     *     EndBalance: the value of the end balance
      *
      * args:
      *     period (default: current period): the period in which to fetch the values
@@ -100,16 +100,6 @@ const getCommoditiesData = (period=getCurPeriod(), orgUnit="xQIU41mR69s") => {
     // get all values from functions fething them
     const coms = getCommoditiesNames()
     const [vals, refetch] = getCommoditiesValues(period, orgUnit)
-    const catOpt = [{
-        "id" : "J2Qf1jtZuj8",
-        "displayName" : "Consumption"
-    }, {
-        "id" : "KPP63zJPkOu",
-        "displayName" : "Quantity to be ordered"
-    }, {
-        "id" : "rQLFnNXXIL0",
-        "displayName" : "End Balance"
-    }]
 
     // make the value to be returned the data of one of them if anny are loading or there is an error
     if (!(coms instanceof Array)){ return [coms, refetch] }
@@ -117,23 +107,17 @@ const getCommoditiesData = (period=getCurPeriod(), orgUnit="xQIU41mR69s") => {
     // if all data is pressent map them together to a useful format
     // then sort it twice, first on name then on category combo
     else {
-        return [vals.filter((elem) => {
-            return !(elem.categoryOptionCombo === "HllvX50cXC0")
-        }).map((elem) => {
+        return [coms.map((elem) => {
             return { 
-                "DataElementName": coms.filter((x) => {return x.id === elem.dataElement})[0].displayName, 
-                "DataElement": elem.dataElement, 
-                "value": elem.value, 
-                "categoryOptionCombos": elem.categoryOptionCombo,
-                "categoryOptionCombosName": catOpt.filter((x) => {return x.id === elem.categoryOptionCombo})[0].displayName
+                "DataElementName": elem.displayName,
+                "DataElement": elem.id, 
+                "Consumption": vals.filter((x) => {return x.categoryOptionCombo === "J2Qf1jtZuj8" && x.dataElement === elem.id})[0].value,
+                "QuantityToBeOrdered": vals.filter((x) => {return x.categoryOptionCombo === "KPP63zJPkOu" && x.dataElement === elem.id})[0].value,
+                "EndBalance": vals.filter((x) => {return x.categoryOptionCombo === "rQLFnNXXIL0" && x.dataElement === elem.id})[0].value
             }
         }).sort(function(a, b){
             if (a.DataElementName > b.DataElementName) {return 1}
             if (a.DataElementName < b.DataElementName) {return -1}
-            return 0
-        }).sort(function(a, b){
-            if (a.categoryOptionCombos > b.categoryOptionCombos) {return 1}
-            if (a.categoryOptionCombos < b.categoryOptionCombos) {return -1}
             return 0
         }), refetch]
     }

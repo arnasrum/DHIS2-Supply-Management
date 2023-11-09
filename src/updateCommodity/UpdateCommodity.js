@@ -10,11 +10,10 @@ import {
   Button,
 } from "@dhis2/ui";
 import { changeCommodityCount, getSingleChangeMutator } from "../logicLayer/ApiMuatations";
-import { getCommoditiesNames, getCommoditiesValues } from '../logicLayer/ApiCalls';
+import { getCommoditiesNames } from '../logicLayer/ApiCalls';
 
 export function UpdateCommodity(props) {
   const mutator = getSingleChangeMutator()
-  console.log(getCommoditiesValues())
 
   // on submit
   async function submit(formInput) {
