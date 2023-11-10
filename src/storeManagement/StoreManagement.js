@@ -4,7 +4,7 @@ import {
   requestCommodities,
   requestComValues,
   dataMutationQuery,
-} from "../apiConstants";
+} from "../logicLayer/apiConstants";
 
 import classes from "../App.module.css";
 
