@@ -14,56 +14,43 @@ import {
   Button,
 } from "@dhis2/ui";
 
-const request = {
-  commodityFieldRequest: {
-    resource: `/dataSets/ULowA8V3ucd`,
-    params: {
-      fields: "displayName,dataSetElements[dataElement[id,displayName,*]]",
-    },
-  },
-};
 
 export function CommoditySelect(props) {
-  const commodity = props.commodity;
-  const setCommodity = props.setCommodity;
+    const commodity = props.commodity;
+    const commodities = props.commodities;
+    const setCommodity = props.setCommodity;
 
-  const sendRequest = () => {
-    const { loading, error, data } = useDataQuery(request);
-    if (error) {
-      return <span>ERROR: {error.message}</span>;
+    const sendRequest = () => {
+        if (Array.isArray(commodities[0])) {
+            console.log(commodities);
+            return (
+                <label>
+                Select commodity:
+                <SingleSelect
+                    onChange={(selected) => handleChange(selected)}
+                    selected={commodity}
+                    placeholder="Select required commodity"
+                >
+                {commodities[0].map((item) => {
+                const name = item.DataElementName;
+                    return (
+                    <SingleSelectOption
+                        key={crypto.randomUUID()}
+                        label={name}
+                        value={item.DataElement}
+                        />
+                    );
+                })}
+                </SingleSelect>
+                </label>
+            );
+        }
+        if (commodities) {
+            return commodities[0];
+        }
+    };
+    function handleChange(item) {
+        setCommodity(item.selected);
     }
-
-    if (loading) {
-      return <span>Loading...</span>;
-    }
-
-    if (data) {
-      return (
-        <label>
-          Select commodity:
-          <SingleSelect
-            onChange={(selected) => handleChange(selected)}
-            selected={commodity}
-            placeholder="Select required commodity"
-          >
-            {data.commodityFieldRequest.dataSetElements.map((item) => {
-              const name = item.dataElement.displayName.split(" - ")[1];
-              return (
-                <SingleSelectOption
-                  key={crypto.randomUUID()}
-                  label={name}
-                  value={item.dataElement.id}
-                />
-              );
-            })}
-          </SingleSelect>
-        </label>
-      );
-    }
-  };
-  function handleChange(item) {
-    setCommodity(item.selected);
-  }
-
-  return <>{sendRequest()}</>;
+    return <>{sendRequest()}</>;
 }
