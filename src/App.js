@@ -8,6 +8,7 @@ import { DispenseCommodity } from "./dispenseCommodity/DispenseCommodity";
 import { UpdateCommodity } from "./updateCommodity/UpdateCommodity";
 import { StoreManagement } from "./storeManagement/StoreManagement";
 import { useState } from "react";
+import { getCommoditiesData } from "./logicLayer/ApiCalls";
 
 function MyApp() {
   const [activePage, setActivePage] = useState("Browse");
@@ -15,23 +16,23 @@ function MyApp() {
     setActivePage(page);
   }
 
-  return (
-    <div className={classes.container}>
-      <div className={classes.left}>
-        <Navigation
-          activePage={activePage}
-          activePageHandler={activePageHandler}
-        />
+    return (
+      <div className={classes.container}>
+        <div className={classes.left}>
+          <Navigation
+            activePage={activePage}
+            activePageHandler={activePageHandler}
+          />
+        </div>
+        <div className={classes.right}>
+          {activePage === "CommodityTable" && <CommodityTable />}
+          {activePage === "DispenseCommodity" && <DispenseCommodity />}
+          {activePage === "RequestCommodity" && <RequestCommodity />}
+          {activePage === "UpdateCommodity" && <UpdateCommodity />}
+          {activePage === "StoreManagement" && <StoreManagement />}
+        </div>
       </div>
-      <div className={classes.right}>
-        {activePage === "CommodityTable" && <CommodityTable />}
-        {activePage === "DispenseCommodity" && <DispenseCommodity />}
-        {activePage === "RequestCommodity" && <RequestCommodity />}
-        {activePage === "UpdateCommodity" && <UpdateCommodity />}
-        {activePage === "StoreManagement" && <StoreManagement />}
-      </div>
-    </div>
-  );
-}
+    );
+  }
 
 export default MyApp;

@@ -1,6 +1,5 @@
-import { useDataQuery } from "@dhis2/app-runtime";
+import React, { useState } from 'react';
 import {
-  CircularLoader,
   ReactFinalForm,
   SingleSelectFieldFF,
   InputFieldFF,
@@ -9,88 +8,50 @@ import {
   integer,
   createMinNumber,
   Button,
+  AlertBar,
+  AlertStack
 } from "@dhis2/ui";
-import { useDataMutation } from "@dhis2/app-runtime";
-
-// muatation querry
-const dataMutationQuery = {
-  resource: "dataValueSets",
-  type: "create",
-  dataSet: "ULowA8V3ucd",
-  data: ({ value, dataElement, period, orgUnit }) => ({
-    dataValues: [
-      {
-        dataElement: dataElement,
-        period: period,
-        orgUnit: orgUnit,
-        value: value,
-      },
-    ],
-  }),
-};
-
-// request to get commodities
-const request = {
-  request0: {
-    resource: "/dataSets/ULowA8V3ucd",
-    params: {
-      fields: "displayName,dataSetElements[dataElement[id,displayName]]",
-    },
-  },
-};
+import { changeCommodityCount, getSingleChangeMutator } from "../logicLayer/ApiMuatations";
+import { getCommoditiesNames } from '../logicLayer/ApiCalls';
 
 export function UpdateCommodity(props) {
-  // data muatation and data querry
-  const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery);
-  const { loading, error, data } = useDataQuery(request);
+  const [alert, setAlert] = useState([])
+  const mutator = getSingleChangeMutator()
+  const coms = getCommoditiesNames()
 
   // on submit
-  function submit(formInput) {
-    alert("Updated amount to " + formInput.value);
-    // get date, index 0 is year 1 is month
-    const date = new Date().toISOString().split("-");
-    // send muatation querry
-    mutate({
-      value: formInput.value,
-      dataElement: formInput.dataElement,
-      period: date[0] + date[1],
-      orgUnit: "xQIU41mR69s",
-    });
+  async function submit(formInput) {
+    changeCommodityCount(mutator, formInput.value, formInput.dataElement, "rQLFnNXXIL0")
+    // set alert
+    setAlert((prev) => {
+      return [...prev, (
+        <AlertBar 
+          success 
+        >
+          {coms.filter((x) => {return x.id === formInput.dataElement})[0].displayName} successfully recounted
+        </AlertBar>
+      )]
+    })
   }
 
-  // makes a list of all the options based on a dataset of commodities
-  function getOptions(data) {
-    const list = [];
-    data.request0.dataSetElements.map((elem) => {
-      const names = elem.dataElement.displayName.split("- ")[1];
-      list.push({ label: names, value: elem.dataElement.id });
-    });
-    return list;
-  }
-
-  // on error fetching commodities
-  if (error) {
-    return <span>ERROR: {error.message}</span>;
-  }
-  // when loding fetching commodities
-  if (loading) {
-    return <CircularLoader />;
-  }
-  // when data is pressent fetching commodities
-  if (data) {
-    // return form
+  // return form
+  if (!(coms instanceof Array)) {return coms}
+  else {
     return (
-      <ReactFinalForm.Form onSubmit={submit}>
-        {({ handleSubmit }) => (
-          <form onSubmit={handleSubmit}>
+      <div>
+        <ReactFinalForm.Form onSubmit={submit}>
+        {({ handleSubmit, form }) => (
+          <form onSubmit={(event) => {
+            handleSubmit(event).then(() => form.reset())
+          }}>
             <ReactFinalForm.Field
               name="dataElement"
-              label={data.request0.displayName}
+              label="Life-Saving Commodities"
               id="singleSelect"
               placeholder="Select - One"
               validate={composeValidators(hasValue)}
               component={SingleSelectFieldFF}
-              options={getOptions(data)}
+              options={coms.map((elem) => {return { label: elem.displayName, value: elem.id }})}
               inputWidth="300px"
             />
             <ReactFinalForm.Field
@@ -99,6 +60,7 @@ export function UpdateCommodity(props) {
               placeholder="A number greater than 0"
               inputWidth="300px"
               component={InputFieldFF}
+
               validate={composeValidators(
                 hasValue,
                 integer,
@@ -111,7 +73,11 @@ export function UpdateCommodity(props) {
             </Button>
           </form>
         )}
-      </ReactFinalForm.Form>
+        </ReactFinalForm.Form>
+        <AlertStack>
+          {alert}
+        </AlertStack>
+      </div>
     );
   }
 }

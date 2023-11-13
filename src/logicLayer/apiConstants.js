@@ -24,6 +24,15 @@ export const dataMutationQuery = {
   }),
 };
 
+export const dataMutationQueryMultiple = {
+  resource: "dataValueSets",
+  type: "create",
+  dataSet: "ULowA8V3ucd",
+  data: ({ dataValues }) => ({
+    dataValues: dataValues,
+  }),
+};
+
 // temp
 export const requestComValues = {
   request0: {
@@ -47,6 +56,7 @@ export const requestCommodityValues = {
   },
 };
 
+// temp
 export const requestCategoryOptionCombos = {
   comVals: {
     resource: "/categoryOptionCombos",
@@ -69,7 +79,7 @@ export const requestOrgUnits = {
   orgRequest: {
       resource: "/organisationUnits/g5ptsn0SFX8",
       params: {
-          fields: "children"
+          fields: "children[name,id]"
       }
   },
 }
