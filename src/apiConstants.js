@@ -18,7 +18,7 @@ export const dataMutationQuery = {
         period: period,
         orgUnit: orgUnit,
         value: value,
-        categoryOptionCombo: categoryOptionCombo
+        categoryOptionCombo: categoryOptionCombo,
       },
     ],
   }),
@@ -30,7 +30,7 @@ export const requestComValues = {
     resource: "/dataValueSets",
     params: {
       orgUnit: "xQIU41mR69s",
-      period: "202310",
+      period: "202311",
       dataSet: "ULowA8V3ucd",
     },
   },
@@ -51,7 +51,7 @@ export const requestCategoryOptionCombos = {
   comVals: {
     resource: "/categoryOptionCombos",
     params: {
-      paging: false
+      paging: false,
     },
   },
 };
@@ -63,13 +63,13 @@ export const requestUser = {
       fields: "id,name,organisationUnits",
     },
   },
-}
+};
 
 export const requestOrgUnits = {
   orgRequest: {
-      resource: "/organisationUnits/g5ptsn0SFX8",
-      params: {
-          fields: "children"
-      }
+    resource: "/organisationUnits/g5ptsn0SFX8",
+    params: {
+      fields: "children",
+    },
   },
-}
+};

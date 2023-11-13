@@ -4,8 +4,12 @@ import {
   requestCommodities,
   requestComValues,
   dataMutationQuery,
-} from "../logicLayer/apiConstants";
-
+} from "../apiConstants";
+import {
+  getCommoditiesNames,
+  getCommoditiesData,
+  getCommoditiesValues,
+} from "../logicLayer/ApiCalls";
 import classes from "../App.module.css";
 
 import {
@@ -30,24 +34,21 @@ import {
 } from "@dhis2/ui";
 
 export function StoreManagement() {
+  const commodities = getCommoditiesNames();
+  const comValues = getCommoditiesValues();
+
+  console.log("commodities", comValues[0]);
   // Get values and commodities form the API
   const {
     loading: loadingVal,
     error: errorVal,
     data: dataVal,
   } = useDataQuery(requestComValues);
-  const {
-    loading: loadingCom,
-    error: errorCom,
-    data: dataCom,
-  } = useDataQuery(requestCommodities);
+  console.log("dataVal", dataVal);
   //Data mutation
   const [mutate, { loadingM, errorM }] = useDataMutation(dataMutationQuery);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showFail, setShowFail] = useState(false);
-
-  // State for input values in the form
-  const [inputValues, setInputValues] = useState({});
 
   // Helper function to update the commodity values
   async function getCommodityValueFromAPI(commodityId) {
@@ -63,7 +64,6 @@ export function StoreManagement() {
 
   // Function to handle form submit
   function onSubmit(formInput) {
-    console.log("inputValues", formInput);
     for (const element in formInput) {
       const value = parseInt(formInput[element]);
       if (!isNaN(value)) {
@@ -88,25 +88,27 @@ export function StoreManagement() {
     }
   }
 
-  if (errorVal || errorCom) {
+  if (errorVal) {
     console.error("Error fetching data from the new API:", error.message);
   }
 
   // Map values to commodities
   const values = new Map();
-  if (dataVal)
-    dataVal.request0.dataValues.forEach((el) => {
+  if (comValues[0] instanceof Array)
+    comValues[0].forEach((el) => {
       // Fetch the first element as it is the newest in the list
       if (!values.has(el.dataElement))
         values.set(el.dataElement, parseInt(el.value));
     });
 
-  if (loadingCom || loadingVal) {
+  if (loadingVal) {
     return <CircularLoader />;
   }
 
   // If data is fetched, create a table row for each commodity
-  if (dataCom) {
+  if (!(commodities instanceof Array)) {
+    return commodities;
+  } else {
     return (
       <div className={classes.storemanagement}>
         <h1>Store Management</h1>
@@ -127,17 +129,16 @@ export function StoreManagement() {
                 <TableHead>
                   <TableRowHead>
                     <TableCellHead>Display Name</TableCellHead>
-                    <TableCellHead>Cell Id</TableCellHead>
                     <TableCellHead>Current Amount</TableCellHead>
                     <TableCellHead>Amount</TableCellHead>
                   </TableRowHead>
                 </TableHead>
                 <TableBody>
-                  {dataCom &&
-                    dataCom.commodities.dataSetElements
+                  {commodities &&
+                    commodities
                       .map((dataset) => ({
-                        id: dataset.dataElement.id,
-                        displayName: dataset.dataElement.displayName.replace(
+                        id: dataset.id,
+                        displayName: dataset.displayName.replace(
                           "Commodities - ",
                           ""
                         ),
@@ -148,7 +149,6 @@ export function StoreManagement() {
                       .map((dataset) => (
                         <TableRow key={dataset.id}>
                           <TableCell>{dataset.displayName}</TableCell>
-                          <TableCell>{dataset.id}</TableCell>
                           <TableCell>{values.get(dataset.id)}</TableCell>
                           <TableCell>
                             <ReactFinalForm.Field
@@ -164,7 +164,6 @@ export function StoreManagement() {
                                   event.target.value
                                 )
                               }
-                              value={inputValues[dataset.id] || ""}
                             />
                           </TableCell>
                         </TableRow>
