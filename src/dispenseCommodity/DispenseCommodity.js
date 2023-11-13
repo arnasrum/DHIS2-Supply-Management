@@ -4,10 +4,17 @@ import { ReactFinalForm, Button, AlertBar} from "@dhis2/ui";
 import { AmountField } from "./AmountField";
 import { CommodityField } from "./CommodityField";
 import { NameField } from "./NameField";
-import { getCommoditiesData } from "../logicLayer/ApiCalls";
+import { getCommoditiesData, fetchUser } from "../logicLayer/ApiCalls";
+import { consumeCommodityCount, getCurPeriod } from "../logicLayer/Helpers";
+import { getMultipleChangeMutator } from "../logicLayer/ApiMuatations";
+import { CommodityTable } from "./CommodityTable";
+
+
 
 export function DispenseCommodity(props) {
 
+    const mutator = getMultipleChangeMutator();
+    const user = fetchUser();
     const [successAlert, setSuccessAlert] = useState(<></>);
     const commodities = getCommoditiesData();
 
@@ -32,6 +39,7 @@ export function DispenseCommodity(props) {
             )}
             </ReactFinalForm.Form>
             {successAlert}
+            <CommodityTable commodities={commodities}/>
         </>
         );
     }
@@ -40,6 +48,57 @@ export function DispenseCommodity(props) {
     }
 
     function onSubmit(formInput) {
+        
+        try {
+            const dispensedCommodity = commodities[0].filter((item) => {
+                if(item.DataElement == formInput.commodity.split("&")[0]) {
+                    return true;
+                }
+                return false;
+            });
+            console.log(dispensedCommodity);
+            consumeCommodityCount(mutator, 
+                                formInput.dispensedAmount,
+                                dispensedCommodity[0].EndBalance,
+                                dispensedCommodity[0].Consumption,
+                                dispensedCommodity[0].DataElement,
+                                getCurPeriod(),
+                                "xQIU41mR69s")
+            setSuccessAlert(
+                <AlertBar success>
+                    {formInput.dispensedAmount.toString() + " " +
+                    formInput.commodity.split("&")[1].toString() + " " +
+                    "dispensed to " +
+                    formInput.dispensedTo}
+                </AlertBar>);
+                const date = new Date();
+                const postQuery =
+                "http://localhost:9999/api/dataStore/IN5320-27/" + crypto.randomUUID();
+                fetch(postQuery, {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json",
+                    },
+                    body: JSON.stringify({
+                    date: date.toISOString(),
+                    amount: formInput.dispensedAmount,
+                    commodityID: formInput.commodity.split("&")[0],
+                    dispensedBy: user.meRequest.name,
+                    dispensedTo: formInput.dispensedTo,
+                    commodityName: formInput.commodity.split("&")[1],
+                    }),
+                })
+                .then((response) => response.json())
+                .then((response) => {
+                    console.log(response);
+                });
+        } catch(error) {
+            setSuccessAlert(<AlertBar critical>{error.toString()}</AlertBar>);
+            console.error(error);
+        }
+
+
+        /*
         let query = "http://localhost:9999/api/dataValues.json?";
         query = query + "de=" + formInput.commodity.split("&")[0];
         const date = new Date();
@@ -93,5 +152,7 @@ export function DispenseCommodity(props) {
                 setSuccessAlert(<AlertBar critical>{error.toString()}</AlertBar>);
                 console.error(error);
             });
+
+        */
     }
 }
