@@ -274,4 +274,4 @@ const changeCommodityCount = (mutator, value, dataElement, refetch = null, perio
 }
 
 // export functions so they ar accesible elsewere 
-export { changeCommodityCount, changeCommodityCountMutator, getCommoditiesData, fetchOrgUnit, fetchUser }
+export { changeCommodityCount, changeCommodityCountMutator, getCommoditiesData, fetchOrgUnit, fetchUser}
