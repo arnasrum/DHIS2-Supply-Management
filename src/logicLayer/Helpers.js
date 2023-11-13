@@ -24,8 +24,8 @@ const consumeCommodityCount = (
      *     orgUnit (default: "xQIU41mR69s"): org unit id
      */
     changeCommodityCountMultiple(mutator, [
-        makeDatavalueMap(prevConsumtion + addValue, dataElement, period, "J2Qf1jtZuj8", orgUnit),
-        makeDatavalueMap(prevValue - addValue, dataElement, period, "rQLFnNXXIL0", orgUnit)
+        makeDatavalueMap(parseInt(prevConsumtion) + parseInt(addValue), dataElement, period, "J2Qf1jtZuj8", orgUnit),
+        makeDatavalueMap(parseInt(prevValue) - parseInt(addValue), dataElement, period, "rQLFnNXXIL0", orgUnit)
     ])
 }
 

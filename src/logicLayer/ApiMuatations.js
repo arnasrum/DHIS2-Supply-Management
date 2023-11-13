@@ -68,10 +68,6 @@ const changeCommodityCountMultiple = (mutator, dataValueArray) => {
     mutator({dataValues: dataValueArray})
 }
 
-// TODO:
-//
-// datastore post
-
 export { 
     getSingleChangeMutator, 
     getMultipleChangeMutator, 

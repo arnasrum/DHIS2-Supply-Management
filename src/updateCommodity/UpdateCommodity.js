@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ReactFinalForm,
   SingleSelectFieldFF,
@@ -8,25 +8,38 @@ import {
   integer,
   createMinNumber,
   Button,
+  AlertBar,
+  AlertStack
 } from "@dhis2/ui";
 import { changeCommodityCount, getSingleChangeMutator } from "../logicLayer/ApiMuatations";
 import { getCommoditiesNames } from '../logicLayer/ApiCalls';
 
 export function UpdateCommodity(props) {
+  const [alert, setAlert] = useState([])
   const mutator = getSingleChangeMutator()
+  const coms = getCommoditiesNames()
 
   // on submit
   async function submit(formInput) {
-    alert("Updated amount to " + formInput.value);
     changeCommodityCount(mutator, formInput.value, formInput.dataElement, "rQLFnNXXIL0")
+    // set alert
+    setAlert((prev) => {
+      return [...prev, (
+        <AlertBar 
+          success 
+        >
+          {coms.filter((x) => {return x.id === formInput.dataElement})[0].displayName} successfully recounted
+        </AlertBar>
+      )]
+    })
   }
 
   // return form
-  const coms = getCommoditiesNames()
   if (!(coms instanceof Array)) {return coms}
   else {
     return (
-      <ReactFinalForm.Form onSubmit={submit}>
+      <div>
+        <ReactFinalForm.Form onSubmit={submit}>
         {({ handleSubmit, form }) => (
           <form onSubmit={(event) => {
             handleSubmit(event).then(() => form.reset())
@@ -60,7 +73,11 @@ export function UpdateCommodity(props) {
             </Button>
           </form>
         )}
-      </ReactFinalForm.Form>
+        </ReactFinalForm.Form>
+        <AlertStack>
+          {alert}
+        </AlertStack>
+      </div>
     );
   }
 }
