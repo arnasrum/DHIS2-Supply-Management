@@ -15,11 +15,8 @@ import {
   Button,
   composeValidators,
   number,
+  createMinNumber,
 } from "@dhis2/ui";
-
-
-import { getCurPeriod } from "../logicLayer/Helpers";
-
 
 export function InputTable(props) {
     const onSubmit = props.onSubmit;
