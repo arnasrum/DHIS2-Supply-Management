@@ -80,8 +80,8 @@ export function ClinicRequestTable(props) {
             <AlertStack>{alerts.map((item) => item)}</AlertStack>
         </>);
     }
-    
     return <h1>Select a Commodity</h1>
+
     function onSubmit(formInput) {
         const date = new Date();
         const postQuery = "http://localhost:9999/api/dataStore/IN5320-27-requests/";
@@ -106,11 +106,19 @@ export function ClinicRequestTable(props) {
             .then((response) => response.json())
             .then((response) => console.log(response))
             .then(() => setAlerts((prevState, props) => 
-            [...prevState, 
-                <AlertBar success key={crypto.randomUUID()}>
-                    {"Requested " + clinicName + " " + formInput[org] + " " + commodity.split("&")[1]}
-                </AlertBar>]))
-            .catch((error) => console.error(error));
+                [...prevState, 
+                    <AlertBar success key={crypto.randomUUID()}>
+                        {"Requested " + clinicName + " " + formInput[org] + " " + commodity.split("&")[1]}
+                    </AlertBar>
+                ]))
+           .catch((error) => {
+                setAlerts((prevState) => 
+                [...prevState, 
+                <AlertBar critical key={crypto.randomUUID()}>
+                    {error.message}
+                </AlertBar>])
+                console.error(error);
+            });
         });
     }
 }
