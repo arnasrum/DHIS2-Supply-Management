@@ -4,7 +4,7 @@ import { CircularLoader } from "@dhis2/ui";
 
 import { CommoditySelect } from "./CommoditySelect";
 import { ClinicTable } from "./ClinicTable";
-import { ClinicTableOld } from "./ClinicTableOld";
+import { ClinicRequestTable } from "./ClinicRequestTable";
 import { RequestTable } from "./RequestTable";
 
 import { fetchOrgUnit, getCommoditiesData } from "../logicLayer/ApiCalls";
@@ -27,7 +27,7 @@ export function RequestCommodity(props) {
         return(
             <>
                 <CommoditySelect commodity={commodity} setCommodity={setCommodity} commodities={commodityData}/>                
-                <ClinicTableOld orgs={filteredOrgs} commodity={commodity} values={orgValue} setValues={setOrgValue}/>
+                <ClinicRequestTable orgs={filteredOrgs} commodity={commodity} values={orgValue} setValues={setOrgValue}/>
                 <RequestTable orgs={filteredOrgs} commodity={commodity} usersOrg={myOrg}/>
             </>
         );
