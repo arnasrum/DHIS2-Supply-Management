@@ -22,7 +22,6 @@ export function CommoditySelect(props) {
 
     const sendRequest = () => {
         if (Array.isArray(commodities[0])) {
-            //console.log(commodities);
             return (
                 <label>
                 Select commodity:
@@ -37,7 +36,7 @@ export function CommoditySelect(props) {
                     <SingleSelectOption
                         key={crypto.randomUUID()}
                         label={name}
-                        value={item.DataElement}
+                        value={item.DataElement + "&" + item.DataElementName}
                         />
                     );
                 })}

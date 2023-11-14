@@ -27,8 +27,7 @@ export function RequestCommodity(props) {
         return(
             <>
                 <CommoditySelect commodity={commodity} setCommodity={setCommodity} commodities={commodityData}/>                
-                <ClinicRequestTable orgs={filteredOrgs} commodity={commodity} values={orgValue} setValues={setOrgValue}/>
-                <RequestTable orgs={filteredOrgs} commodity={commodity} usersOrg={myOrg}/>
+                <ClinicRequestTable orgs={filteredOrgs} commodity={commodity} usersOrg={myOrg}/>
             </>
         );
     }
