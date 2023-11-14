@@ -21,9 +21,8 @@ import {
   AlertBar,
 } from "@dhis2/ui";
 
-
+import { InputTable } from "../components/InputTable";
 import { getCurPeriod } from "../logicLayer/Helpers";
-
 
 function getCommodityValue(dataElements, commodityID) {
     const value = dataElements.filter((item) => {
@@ -71,6 +70,9 @@ export function ClinicRequestTable(props) {
                 return data;
             })
             .then((data) => {
+                data.forEach((item) => {
+                    item["value"] = getCommodityValue(item.dataElements, commodity);
+                });
                 setOrgData(data); 
                 return data;
             })
@@ -79,54 +81,21 @@ export function ClinicRequestTable(props) {
                 console.error("Error fetching data:", error);
             });
         }, [commodity]);
-    
-    return (
+    if(orgData.length > 0) {
+        return (
         <>
-        <ReactFinalForm.Form onSubmit={onSubmit}>
-          {({ handleSubmit, form }) => (
-            <form
-              onSubmit={async (event) => {
-                await handleSubmit(event);
-                form.reset();
-              }}
-              autoComplete="off"
-            >
-            <Table>
-                <TableHead>
-                <TableRowHead>
-                    <TableCellHead>Clinic</TableCellHead>
-                    <TableCellHead>Value</TableCellHead>
-                    <TableCellHead>Request Amount</TableCellHead>
-                </TableRowHead>
-                </TableHead>
-                <TableBody>
-                {orgData.map((item) => {
-                    return (
-                    <TableRow key={item.id}>
-                        <TableCell>{item["name"]}</TableCell>
-                        <TableCell>{getCommodityValue(item.dataElements, commodity)}</TableCell> 
-                        <TableCell>
-                            <ReactFinalForm.Field
-                              name={item.id}
-                              component={InputFieldFF}
-                              validate={composeValidators(
-                                number,
-                                createMinNumber(0)
-                              )}
-                              value={inputValues[item.id] || ""}
-                            />
-                        </TableCell>
-                    </TableRow>
-                    );
-                })}
-                </TableBody>
-            </Table>
-            <Button type="submit" primary>Submit</Button>
-            </form>
-            )}
-        </ReactFinalForm.Form>
+            <InputTable 
+                headerNames={["Clinic", "Value", "Request Amount"]}
+                propertyNames={["name", "value"]}
+                onSubmit={onSubmit}
+                data={orgData}
+            />
         </>
-    );
+        );
+    }
+    
+    return <h1>Select a Commodity</h1>
+
     function onSubmit(formInput) {
         console.log("formInput", formInput);
     }
