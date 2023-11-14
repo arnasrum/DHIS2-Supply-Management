@@ -66,6 +66,7 @@ export function ClinicTable(props) {
                     <TableRowHead>
                         <TableCellHead>Clinic</TableCellHead>
                         <TableCellHead>Value</TableCellHead>
+                        <TableCellHead>Request Amount</TableCellHead>
                     </TableRowHead>
                     </TableHead>
                     <TableBody>

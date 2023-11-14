@@ -10,7 +10,6 @@ import {
   TableRowHead,
 } from "@dhis2/ui";
 
-import { getCommoditiesData } from "../logicLayer/ApiCalls";
 import { getCurPeriod } from "../logicLayer/Helpers";
 
 
@@ -22,12 +21,9 @@ function getCommodityValue(dataElements, commodityID) {
     return value[0].value;
 }
 
-export function ClinicTable(props) {
+export function ClinicTableOld(props) {
     const commodity = props.commodity;
-    const values = props.values;
-    const setValues = props.setValues;
     const orgs = props.orgs;
-    //const [values, setValues] = useState([]); // Use state to store the values
     const [orgData, setOrgData] = useState([]);
 
 

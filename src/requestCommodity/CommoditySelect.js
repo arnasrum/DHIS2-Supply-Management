@@ -22,7 +22,7 @@ export function CommoditySelect(props) {
 
     const sendRequest = () => {
         if (Array.isArray(commodities[0])) {
-            console.log(commodities);
+            //console.log(commodities);
             return (
                 <label>
                 Select commodity:

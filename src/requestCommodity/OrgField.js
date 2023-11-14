@@ -19,7 +19,7 @@ export function OrgField(props) {
                 label="Request Org: "
                 placeholder="Org"
                 options={props.orgs.map((item) => {
-                    return {"label":item.orgName.name, "value": item.id.toString() + "-" + item.orgName.name}
+                    return {"label":item.name, "value": item.id.toString() + "-" + item.name}
                 })}
             >
             </ReactFinalForm.Field>
