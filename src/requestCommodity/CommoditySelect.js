@@ -1,18 +1,5 @@
 import React from "react";
-import { useDataQuery } from "@dhis2/app-runtime";
-import {
-  CircularLoader,
-  ReactFinalForm,
-  SingleSelect,
-  SingleSelectOption,
-  SingleSelectFieldFF,
-  InputFieldFF,
-  composeValidators,
-  hasValue,
-  integer,
-  createMinNumber,
-  Button,
-} from "@dhis2/ui";
+import { SingleSelect, SingleSelectOption } from "@dhis2/ui";
 
 
 export function CommoditySelect(props) {

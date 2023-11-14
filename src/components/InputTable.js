@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -12,15 +12,9 @@ import {
 import {
   ReactFinalForm,
   InputFieldFF,
-  InputField,
   Button,
-  CircularLoader,
   composeValidators,
-  hasValue,
   number,
-  createMinNumber,
-  AlertBar,
-  AlertStack
 } from "@dhis2/ui";
 
 

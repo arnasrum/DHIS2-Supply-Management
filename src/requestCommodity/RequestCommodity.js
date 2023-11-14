@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useDataQuery } from "@dhis2/app-runtime";
-import { CircularLoader } from "@dhis2/ui";
+import React, { useState } from "react";
 
 import { CommoditySelect } from "./CommoditySelect";
-import { ClinicTable } from "./ClinicTable";
 import { ClinicRequestTable } from "./ClinicRequestTable";
-import { RequestTable } from "./RequestTable";
 
 import { fetchOrgUnit, getCommoditiesData } from "../logicLayer/ApiCalls";
 
@@ -15,7 +11,6 @@ export function RequestCommodity(props) {
     const myOrg = "xQIU41mR69s";
     const orgs = fetchOrgUnit();
     const commodityData = getCommoditiesData();
-    const [orgValue, setOrgValue] = useState([]);
     const [commodity, setCommodity] = useState("");    
 
 
