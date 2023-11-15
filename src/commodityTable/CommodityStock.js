@@ -15,7 +15,6 @@ import {
 
 export function CommodityStock(props) {
     const data = getCommoditiesData();
-    console.log(data)
     
     if (React.isValidElement(data[0])) {
         return data[0];
