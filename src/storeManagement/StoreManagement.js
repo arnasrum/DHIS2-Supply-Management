@@ -9,6 +9,7 @@ import {
   changeCommodityCount,
   getSingleChangeMutator,
 } from "../logicLayer/ApiMuatations";
+import { getCurPeriod } from "../logicLayer/Helpers";
 
 export function StoreManagement() {
   // Get values and commodities form the API
@@ -20,7 +21,8 @@ export function StoreManagement() {
 
   // Helper function to fetch current commodity value
   async function getCommodityValueFromAPI(commodityId) {
-    const query = `http://localhost:9999/api/dataValues.json?de=${commodityId}&pe=202311&ou=xQIU41mR69s&co=rQLFnNXXIL0`;
+    const period = getCurPeriod();
+    const query = `http://localhost:9999/api/dataValues.json?de=${commodityId}&pe=${period}&ou=xQIU41mR69s&co=rQLFnNXXIL0`;
     try {
       const response = await fetch(query);
       const result = await response.json();

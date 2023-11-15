@@ -72,7 +72,6 @@ export function ClinicRequestTable(props) {
     return <CircularLoader />;
   }
   if (orgData.length > 0) {
-    console.log(orgData);
     return (
       <>
         <InputTable
@@ -92,7 +91,6 @@ export function ClinicRequestTable(props) {
     const postQuery = "http://localhost:9999/api/dataStore/IN5320-27-requests/";
     Object.keys(formInput).forEach((org) => {
       const clinicName = orgs.filter((item) => item.id == org)[0].name;
-      console.log(clinicName);
       fetch(postQuery + crypto.randomUUID(), {
         method: "POST",
         headers: {

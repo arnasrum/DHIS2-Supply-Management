@@ -18,7 +18,7 @@ export const dataMutationQuery = {
         period: period,
         orgUnit: orgUnit,
         value: value,
-        categoryOptionCombo: categoryOptionCombo
+        categoryOptionCombo: categoryOptionCombo,
       },
     ],
   }),
@@ -33,18 +33,6 @@ export const dataMutationQueryMultiple = {
   }),
 };
 
-// temp
-export const requestComValues = {
-  request0: {
-    resource: "/dataValueSets",
-    params: {
-      orgUnit: "xQIU41mR69s",
-      period: "202310",
-      dataSet: "ULowA8V3ucd",
-    },
-  },
-};
-
 export const requestCommodityValues = {
   comVals: {
     resource: "/dataValueSets",
@@ -56,16 +44,6 @@ export const requestCommodityValues = {
   },
 };
 
-// temp
-export const requestCategoryOptionCombos = {
-  comVals: {
-    resource: "/categoryOptionCombos",
-    params: {
-      paging: false
-    },
-  },
-};
-
 export const requestUser = {
   meRequest: {
     resource: "/me.json",
@@ -73,13 +51,13 @@ export const requestUser = {
       fields: "id,name,organisationUnits",
     },
   },
-}
+};
 
 export const requestOrgUnits = {
   orgRequest: {
-      resource: "/organisationUnits/g5ptsn0SFX8",
-      params: {
-          fields: "children[name,id]"
-      }
+    resource: "/organisationUnits/g5ptsn0SFX8",
+    params: {
+      fields: "children[name,id]",
+    },
   },
-}
+};

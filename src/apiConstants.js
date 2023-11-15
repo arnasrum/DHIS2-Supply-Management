@@ -24,18 +24,6 @@ export const dataMutationQuery = {
   }),
 };
 
-// temp
-export const requestComValues = {
-  request0: {
-    resource: "/dataValueSets",
-    params: {
-      orgUnit: "xQIU41mR69s",
-      period: "202311",
-      dataSet: "ULowA8V3ucd",
-    },
-  },
-};
-
 export const requestCommodityValues = {
   comVals: {
     resource: "/dataValueSets",
