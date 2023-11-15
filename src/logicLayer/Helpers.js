@@ -8,7 +8,8 @@ const consumeCommodityCount = (
     dataElement, 
     period = getCurPeriod(), 
     orgUnit = "xQIU41mR69s",
-    refetch = null
+    refetch = null,
+    error = null
     ) => {
     /**
      * for when a commodity gets dispensed
@@ -24,12 +25,16 @@ const consumeCommodityCount = (
      *     period (default: curentPeriod): a period
      *     orgUnit (default: "xQIU41mR69s"): org unit id'
      *     refetch (default: null): a function used to reftch, no refetching is done if not provided
+     *     error (default: null): an error from the mutation which only is pressent on error when posting, error is not handeled if not provided
+     * 
+     * returns:
+     *     promis: it is null if all is well, else is it a jsx alert giving an error
      */
-    changeCommodityCountMultiple(mutator, [
+    return changeCommodityCountMultiple(mutator, [
         makeDatavalueMap(parseInt(prevConsumtion) + parseInt(addValue), dataElement, period, "J2Qf1jtZuj8", orgUnit),
         makeDatavalueMap(parseInt(prevValue) - parseInt(addValue), dataElement, period, "rQLFnNXXIL0", orgUnit)
     ],
-    refetch)
+    refetch, error)
 }
 
 const getCurPeriod = () => {
