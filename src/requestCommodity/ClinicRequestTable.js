@@ -39,9 +39,9 @@ export function ClinicRequestTable(props) {
                 }))
                 .then((response) => {
                     const obj = {};
-                    obj.id = item.id;
-                    obj.name = item.name;
-                    obj.dataElements = response;
+                    obj.DataElement = item.id;
+                    obj.DataElementName = item.name;
+                    obj.DataElements = response;
                     return obj;
                 })
         });
@@ -53,7 +53,7 @@ export function ClinicRequestTable(props) {
             })
             .then((data) => {
                 data.forEach((item) => {
-                    item["value"] = getCommodityValue(item.dataElements, commodity.split("&")[0]);
+                    item["value"] = getCommodityValue(item.DataElements, commodity.split("&")[0]);
                 });
                 setOrgData(data); 
                 return data;
@@ -73,7 +73,7 @@ export function ClinicRequestTable(props) {
         <>
             <InputTable 
                 headerNames={["Clinic", "Value", "Request Amount"]}
-                propertyNames={["name", "value"]}
+                propertyNames={["DataElementName", "value"]}
                 onSubmit={onSubmit}
                 data={orgData}
             />
