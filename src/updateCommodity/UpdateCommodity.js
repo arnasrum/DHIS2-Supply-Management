@@ -66,13 +66,9 @@ export function UpdateCommodity(props) {
         <h1>Stock Recount</h1>
         <InputTable
           headerNames={["Commodity", "Current Balance", "Recounted Balance"]}
-          propertyNames={["name", "bal"]}
+          propertyNames={["DataElementName", "EndBalance"]}
           onSubmit={submit}
-          data={coms.map((item) => {
-            return {"name": item.DataElementName,
-            "id": item.DataElement,
-            "bal": item.EndBalance}
-          })}
+          data={coms}
         />
         <AlertStack>
           {alert}
