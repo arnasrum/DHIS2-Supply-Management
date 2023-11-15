@@ -1,0 +1,8 @@
+.cellHeadText {
+    margin-top: 0%;
+    margin-bottom: 0%;    
+}
+
+.cellHeadText:hover {
+    text-decoration: underline;
+}
