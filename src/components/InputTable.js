@@ -1,21 +1,21 @@
 import React from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableCellHead,
-  TableHead,
-  TableRow,
-  TableRowHead,
+    Table,
+    TableBody,
+    TableCell,
+    TableCellHead,
+    TableHead,
+    TableRow,
+    TableRowHead,
 } from "@dhis2/ui";
 
 import {
-  ReactFinalForm,
-  InputFieldFF,
-  Button,
-  composeValidators,
-  number,
-  createMinNumber,
+    ReactFinalForm,
+    InputFieldFF,
+    Button,
+    composeValidators,
+    number,
+    createMinNumber,
 } from "@dhis2/ui";
 
 export function InputTable(props) {
