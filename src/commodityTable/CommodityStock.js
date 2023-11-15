@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Table,
     TableBody,
@@ -14,10 +14,21 @@ import {
 
 
 export function CommodityStock(props) {
+    // [a, b]: a - which column, b - is either 0 or 1, 0 for ascending order, 1 for descending
+    const [orderBy, setOrderBy] = useState([1, 0]); 
+
     const data = getCommoditiesData();
     
     if (React.isValidElement(data[0])) {
         return data[0];
+    }
+
+    function flipOrder(numb) {
+        if (orderBy[1]) {
+            if (numb == 1) return -1
+            else return 1
+        }
+        else return numb
     }
 
     function CommodityRows(props) {
@@ -33,6 +44,18 @@ export function CommodityStock(props) {
                     </TableRow>
                 )
             });
+            rows.sort((a, b) => {
+                const el_a = a.props.children[orderBy[0]].props.children
+                const el_b = b.props.children[orderBy[0]].props.children
+                if (orderBy[0] == 0) {
+                    if (el_a > el_b) return flipOrder(1)
+                    else return flipOrder(-1)
+                }
+                else {
+                    if (parseInt(el_a) > parseInt(el_b)) return flipOrder(1)
+                    else return flipOrder(-1)
+                }
+            })
             return rows;
         }
     }
