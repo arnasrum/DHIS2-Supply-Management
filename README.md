@@ -1,5 +1,24 @@
 This project was bootstrapped with [DHIS2 Application Platform](https://github.com/dhis2/app-platform).
 
+## Our app's functionality
+This DHIS2 application provides functionalities such as
+- An overview of the data about commodity stock
+- Dispensing commodities (both singular and bulk)
+- Requesting commodities from other clinics
+- Stock recountinging for adjustments in stock
+- Replenishing commodities for bigger adjustments
+
+## How the app was implemented
+Every programme from the navigation bar is placed in it's own folder. Each folder contains at least one `.js` file, in some special cases also a `.css`. 
+
+Most of the API-calls for data fetching and mutation is abstracted by making functions in files that can be found inside the `logicLayer` folder. These can be accessed by beying imported in your `.js` files.
+
+Frequently used JSX components have also been placed in `components` folder and can be reused.
+
+## Missing and not working stuff
+==Kanskje kan bli skrevet rett før vi leverer inn.
+Da har vi oversikten over hva vi mangler og hva som ikke fungerer.==
+
 ## Available Scripts
 
 In the project directory, you can run:
