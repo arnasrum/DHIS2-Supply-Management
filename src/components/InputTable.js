@@ -48,14 +48,14 @@ export function InputTable(props) {
               <TableBody>
               {data.map((item) => {
                 return (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.DataElement}>
                       {propertyNames.map((property, i) => {
                         return <TableCell key={i}>{item[property]}</TableCell>
                     })}
                     <TableCell>
                       <ReactFinalForm.Field
                         component={InputFieldFF}
-                        name={item.id} 
+                        name={item.DataElement} 
                         validate={composeValidators(
                           number,
                           createMinNumber(0)
