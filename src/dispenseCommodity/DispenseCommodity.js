@@ -10,13 +10,13 @@ import { InputTable } from "../components/InputTable";
 
 export function DispenseCommodity(props) {
 
-    const mutator = getMultipleChangeMutator();
+    const [mutator, error] = getMultipleChangeMutator();
     const user = fetchUser();
-    const commodities = getCommoditiesData();
+    const [commodities, refetch] = getCommoditiesData();
     const [alerts, setAlerts] = useState([]);
     const [name, setName] = useState("");
 
-    if (Array.isArray(commodities[0])) {
+    if (Array.isArray(commodities)) {
         return (
         <>
             <h1>Dispense Commodity</h1>
@@ -30,7 +30,7 @@ export function DispenseCommodity(props) {
             />
             <Divider />
             <InputTable 
-                data={commodities[0]} 
+                data={commodities} 
                 onSubmit={onSubmit}
                 headerNames={["Commidity", "Current Stock", "Dispense Amount"]}
                 propertyNames={["DataElementName", "EndBalance"]}
@@ -39,12 +39,12 @@ export function DispenseCommodity(props) {
         </>
         );
     }
-    if(commodities[0]) {
-        return(<>{commodities[0]}</>);
+    if(commodities) {
+        return(<>{commodities}</>);
     }
 
     function onSubmit(formInput) {
-        try {
+        //try {
             if(name === "") {
                 throw new Error("Please input a name");
             }
@@ -52,33 +52,48 @@ export function DispenseCommodity(props) {
             console.log(formInput);
             Object.keys(formInput).map((id) => {
 
-                const dispensedCommodityData = commodities[0].filter((item) => item.DataElement == id)[0];
+                const dispensedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
                 console.log(dispensedCommodityData);
-                consumeCommodityCount(
+                const errorMessage = consumeCommodityCount(
                     mutator, 
                     formInput.dispensedAmount,
                     dispensedCommodityData.EndBalance,
                     dispensedCommodityData.Consumption,
                     dispensedCommodityData.DataElement,
                     getCurPeriod(),
-                    "xQIU41mR69s"
+                    "xQIU41mR69s",
+                    refetch,
+                    error
                 );
-
-            setAlerts((prev) => {
-                return [...prev,
-                <AlertBar success>
-                    {formInput[id].toString() + " " +
-                    dispensedCommodityData.DataElementName + " " +
-                    "dispensed to " +
-                    name}
-                </AlertBar>
-                ]
-            } 
                 
-                );
+                console.log("error", errorMessage);
+                Promise.resolve(errorMessage).then((values) => {
+                    console.log("values", values[0]);
+                    if (values[0]) {
+                        console.log("failed");
+                        setAlerts((prev) => [...prev, values[0]])
+                    } else {
+                        setAlerts((prev) => [...prev,
+                        <AlertBar success>
+                            {formInput[id].toString() + " " +
+                            dispensedCommodityData.DataElementName + " " +
+                            "dispensed to " +
+                            name}
+                        </AlertBar>]);
+                    }
+                });
+                console.log("done");
+
+                
                 const date = new Date();
-                const postQuery =
-                "http://localhost:9999/api/dataStore/IN5320-27/" + crypto.randomUUID();
+                const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/dispense";
+                /*
+                fetch(postQuery)
+                    .then(response => response.json())
+                    .then(response => console.log(response));
+                //const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/" + crypto.randomUUID();
+                */
+                /*
                 fetch(postQuery, {
                     method: "POST",
                     headers: {
@@ -98,10 +113,14 @@ export function DispenseCommodity(props) {
                     console.log(response);
                 });
 
+            */
             })
+        /*
         } catch(error) {
-        setAlerts((prev) =>  [...prev, <AlertBar critical>{error.toString()}</AlertBar>]);
-        console.error(error);
+            console.log("in catch");
+            setAlerts((prev) =>  [...prev, <AlertBar critical>{error.toString()}</AlertBar>]);
+            console.error(error);
         }
+        */
     }
 }
