@@ -11,7 +11,7 @@ import { makeDatavalueMap } from '../logicLayer/Helpers';
 export function UpdateCommodity(props) {
   // states values
   const [alert, setAlert] = useState([])
-  const mutator = getMultipleChangeMutator()
+  const [mutator, error] = getMultipleChangeMutator()
   const [coms, refetch] = getCommoditiesData()
   const [keyCount, setKeyCount] = useState(0)
 
@@ -34,26 +34,34 @@ export function UpdateCommodity(props) {
       return
     }
     // mutate when value provided
-    changeCommodityCountMultiple(mutator, Object.entries(formInput).map((pair) => {
+    const errM = changeCommodityCountMultiple(mutator, Object.entries(formInput).map((pair) => {
       return makeDatavalueMap(
         pair[1],
         pair[0],
         undefined,
         "rQLFnNXXIL0"
       )
-    }), refetch)
-    // set alert for success
-    setAlert((prev) => {
-      return [...prev, (
-        <AlertBar 
-          success 
-          key={keyCount}
-          children={coms.reduce((tot, curVal) => {
-            if(Object.keys(formInput).includes(curVal.DataElement)) { return tot + ", " + curVal.DataElementName } 
-            return tot
-          }, "").slice(2) + " successfully recounted"}
-        />
-      )]
+    }), refetch, error)
+    // check for error
+    Promise.all([errM]).then((values) => {
+      if (values[0]) {
+        setAlert((prev) => { return [...prev, values[0]]})
+      }
+      else {
+        // set alert for success
+        setAlert((prev) => {
+          return [...prev, (
+            <AlertBar 
+              success 
+              key={keyCount}
+              children={coms.reduce((tot, curVal) => {
+                if(Object.keys(formInput).includes(curVal.DataElement)) { return tot + ", " + curVal.DataElementName } 
+                return tot
+              }, "").slice(2) + " successfully recounted"}
+            />
+          )]
+        })
+      }
     })
   }
 
