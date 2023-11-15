@@ -51,7 +51,7 @@ export function UpdateCommodity(props) {
           children={coms.reduce((tot, curVal) => {
             if(Object.keys(formInput).includes(curVal.DataElement)) { return tot + ", " + curVal.DataElementName } 
             return tot
-          }, "").slice(2) + "successfully recounted"}
+          }, "").slice(2) + " successfully recounted"}
         />
       )]
     })
