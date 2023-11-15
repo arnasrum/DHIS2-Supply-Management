@@ -15,8 +15,7 @@ export function UpdateCommodity(props) {
   const [coms, refetch] = getCommoditiesData()
   const [keyCount, setKeyCount] = useState(0)
 
-
-  // on submit
+    // set alert for success
   function submit(formInput) {
     // update counter for key
     setKeyCount(keyCount + 1)
