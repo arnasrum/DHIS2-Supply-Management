@@ -44,7 +44,7 @@ export function DispenseCommodity(props) {
     }
 
     function onSubmit(formInput) {
-        //try {
+        try {
             if(name === "") {
                 throw new Error("Please input a name");
             }
@@ -53,10 +53,9 @@ export function DispenseCommodity(props) {
             Object.keys(formInput).map((id) => {
 
                 const dispensedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
-                console.log(dispensedCommodityData);
                 const errorMessage = consumeCommodityCount(
                     mutator, 
-                    formInput.dispensedAmount,
+                    formInput[id],
                     dispensedCommodityData.EndBalance,
                     dispensedCommodityData.Consumption,
                     dispensedCommodityData.DataElement,
@@ -65,12 +64,8 @@ export function DispenseCommodity(props) {
                     refetch,
                     error
                 );
-                
-                console.log("error", errorMessage);
                 Promise.resolve(errorMessage).then((values) => {
-                    console.log("values", values[0]);
-                    if (values[0]) {
-                        console.log("failed");
+                    if (values) {
                         setAlerts((prev) => [...prev, values[0]])
                     } else {
                         setAlerts((prev) => [...prev,
@@ -80,47 +75,46 @@ export function DispenseCommodity(props) {
                             "dispensed to " +
                             name}
                         </AlertBar>]);
+                        log(formInput, id, dispensedCommodityData);
                     }
+                }).catch(error => {
+                    console.log("in here lol");
                 });
-                console.log("done");
-
-                
-                const date = new Date();
-                const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/dispense";
-                /*
-                fetch(postQuery)
-                    .then(response => response.json())
-                    .then(response => console.log(response));
-                //const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/" + crypto.randomUUID();
-                */
-                /*
-                fetch(postQuery, {
-                    method: "POST",
-                    headers: {
-                        "Content-type": "application/json",
-                    },
-                    body: JSON.stringify({
-                    date: date.toISOString(),
-                    amount: formInput[id],
-                    commodityID: dispensedCommodityData.DataElement,
-                    dispensedBy: user.meRequest.name,
-                    dispensedTo: name,
-                    commodityName: dispensedCommodityData.DataElementName,
-                    }),
-                })
-                .then((response) => response.json())
-                .then((response) => {
-                    console.log(response);
-                });
-
-            */
             })
-        /*
         } catch(error) {
-            console.log("in catch");
             setAlerts((prev) =>  [...prev, <AlertBar critical>{error.toString()}</AlertBar>]);
             console.error(error);
         }
-        */
+    }
+    function log(formInput, id, dispensedCommodityData) {
+        const date = new Date();
+        const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/dispense";
+        fetch(postQuery)
+            .then(response => response.json())
+            .then(response => {
+                fetch(postQuery, {
+                    method: "PUT",
+                    headers: {
+                        "Content-type": "application/json",
+                    },
+                    body: JSON.stringify(
+                        [
+                            ...response, 
+                            {
+                                date: date.toISOString(),
+                                amount: formInput[id],
+                                commodityID: dispensedCommodityData.DataElement,
+                                dispensedBy: user.meRequest.name,
+                                dispensedTo: name,
+                                commodityName: dispensedCommodityData.DataElementName,
+                            }
+                        ]),
+                })
+                .then((response) => response.json())
+                .then(response => {throw new Error("logged")})
+                .catch((error) => {
+                    setAlerts((prev) =>  [...prev, <AlertBar critical>{error.toString()}</AlertBar>]);
+                });
+            });
     }
 }
