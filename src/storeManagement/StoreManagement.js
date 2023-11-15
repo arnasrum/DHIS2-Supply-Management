@@ -32,12 +32,13 @@ import {
   TableRow,
   TableRowHead,
 } from "@dhis2/ui";
+import { InputTable } from "../components/InputTable";
 
 export function StoreManagement() {
   const commodities = getCommoditiesNames();
   const comValues = getCommoditiesValues();
-
-  console.log("commodities", comValues[0]);
+  const comData = getCommoditiesData();
+  console.log("commodities", comData);
   // Get values and commodities form the API
   const {
     loading: loadingVal,
@@ -94,8 +95,8 @@ export function StoreManagement() {
 
   // Map values to commodities
   const values = new Map();
-  if (comValues[0] instanceof Array)
-    comValues[0].forEach((el) => {
+  if (comData[0] instanceof Array)
+    comData[0].forEach((el) => {
       // Fetch the first element as it is the newest in the list
       if (!values.has(el.dataElement))
         values.set(el.dataElement, parseInt(el.value));
@@ -116,6 +117,12 @@ export function StoreManagement() {
           Update stock count balance when receiving the monthly delivery, enter
           the amount you received.
         </p>
+        <InputTable
+          headerNames={["Display Name", "Current Amount", "Amount"]}
+          propertyNames={["DataElementName", "EndBalance"]}
+          onSubmit={onSubmit}
+          data={comData[0]}
+        ></InputTable>
         <ReactFinalForm.Form onSubmit={onSubmit}>
           {({ handleSubmit, form }) => (
             <form
