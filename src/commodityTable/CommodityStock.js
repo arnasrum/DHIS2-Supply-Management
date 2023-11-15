@@ -15,6 +15,7 @@ import {
 
 export function CommodityStock(props) {
     const data = getCommoditiesData();
+    console.log(data)
     
     if (React.isValidElement(data[0])) {
         return data[0];
@@ -25,7 +26,7 @@ export function CommodityStock(props) {
             const rows = [];
             props.inData[0].forEach((el) => {
                 rows.push(
-                    <TableRow>
+                    <TableRow key={el.DataElement}>
                         <TableCell>{el.DataElementName}</TableCell>
                         <TableCell>{el.Consumption}</TableCell>
                         <TableCell>{el.EndBalance}</TableCell>
