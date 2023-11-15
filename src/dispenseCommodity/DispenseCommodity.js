@@ -44,6 +44,7 @@ export function DispenseCommodity(props) {
                 label="Dispensed To: "
                 placeholder="Name of receiver"
               />
+              <br />
               <Button type="submit" primary>
                 Dispense
               </Button>
