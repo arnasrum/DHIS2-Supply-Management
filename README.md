@@ -21,6 +21,10 @@ Da har vi oversikten over hva vi mangler og hva som ikke fungerer.==
 
 ## Available Scripts
 
+dhis portal script:
+
+### `npx dhis-portal --target=https://data.research.dhis2.org/in5320`
+
 In the project directory, you can run:
 
 ### `yarn start`
@@ -63,7 +67,3 @@ You can learn more about the runtime in the [DHIS2 Application Runtime Documenta
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-
-dhis portal script:
-
-### `npx dhis-portal --target=https://data.research.dhis2.org/in5320`
