@@ -16,7 +16,9 @@ Most of the API-calls for data fetching and mutation is abstracted by making fun
 When we started the actual implementation, we decided to first make some sketches, so we all had a shared vision of the apps design and functionality. We divided the pages between us, and created a backlog to keep track of who was working on what, and what was to be done next. We focused on developing the front end first, followed by the logic. As we worked on the project and learned more about developing in React, we discovered better practices to follow in our implementation, such as increasing the focus on modularizing components that could be reused several places. 
 
 ## Missing functionality/implementations
-The InputTable component is not working optimally when receiving input that are not numbers. If you enter a letter and press submit, the form resets, but nothing happens. If you insert a number, and then in a different column try to insert a letter, you are notified that the input is invalid, but if you press "Submit", the form resets again, and nothing happens. This is not ideal, and with more time, we would implement a solution for this.
+The InputTable component is not working optimally when receiving inputs that are not numbers. If you enter a letter and press submit, the form resets, but nothing happens. If you insert a number, and then in a different column try to insert a letter, you are notified that the input is invalid, but if you press "Submit", the form resets again, and nothing happens. This is not ideal, and with more time, we would implement a solution for this.
+
+We do also not have a depending request table. This was something that we wanted to implement, but sadly didn’t have time to do.
 
 ## Available Scripts
 
