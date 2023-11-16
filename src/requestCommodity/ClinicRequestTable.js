@@ -54,7 +54,7 @@ export function ClinicRequestTable(props) {
         <>
             <InputTable 
                 headerNames={["Clinic", "Value", "Request Amount"]}
-                propertyNames={["DataElement", "value"]}
+                propertyNames={["dataElementName", "value"]}
                 onSubmit={onSubmit}
                 data={orgData}
             />
@@ -66,25 +66,27 @@ export function ClinicRequestTable(props) {
     function onSubmit(formInput) {
         const date = new Date();
         let err = false
-        const loggArr = []
+        const logQueue = []
         Object.entries(formInput).map((pair) => {
-            loggArr.push(
+            const org = orgData.filter((org) => pair[0]  == org.DataElement)[0];
+            logQueue.push(
             {
                 date: date.toISOString(),
                 requestedBy: "xQIU41mR69s",
-                requestedOf: pair[0],
+                requestedClinicID: pair[0],
                 dataElement: commodity,
                 amount: pair[1],
+                requestedClinicName: org.dataElementName,
             });  
         })
-        log(loggArr, "request").catch((error) => {
+        log(logQueue, "request").catch((error) => {
             setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
             err = true
-        })
+        });
         if (!err) {
             setAlerts((prev) =>  [...prev, 
                 <AlertBar 
-                    success children={"successfully requested from: " + Object.keys(formInput).reduce((tot, cur) => {
+                    success children={"Successfully requested from: " + Object.keys(formInput).reduce((tot, cur) => {
                         return tot + ", " + orgs.filter((x) => { return x.id === cur })[0].name
                     }, "").slice(2)} 
                     key={crypto.randomUUID()}

@@ -13,7 +13,7 @@ export function DispenseCommodity(props) {
   const user = fetchUser();
   const [commodities, refetch] = getCommoditiesData();
   const [alerts, setAlerts] = useState([]);
-  const [name, setName] = useState("");
+  const [dispenseToName, setDispenseToName] = useState("");
 
   if (Array.isArray(commodities)) {
     return (
@@ -23,8 +23,8 @@ export function DispenseCommodity(props) {
           label={"Dispense To: "}
           name={"dispensedTo"}
           placeholder={"Dispense To"}
-          value={name}
-          setValue={setName}
+          value={dispenseToName}
+          setValue={setDispenseToName}
           setAlerts={setAlerts}
         />
         <Divider />
@@ -42,7 +42,7 @@ export function DispenseCommodity(props) {
         return <>{commodities}</>;
     }
     function onSubmit(formInput) {
-        if(name === "") {
+        if(dispenseToName === "") {
             setAlerts((prev) =>  [...prev, <AlertBar info children={"Please input a name"} key={crypto.randomUUID()}/>]);
             return;
         }        
@@ -74,7 +74,7 @@ export function DispenseCommodity(props) {
                         <AlertBar success 
                             children={formInput[id].toString() + " " +
                             dispensedCommodityData.DataElementName + " " +
-                            "dispensed to " + name}
+                            "dispensed to " + dispenseToName}
                             key={crypto.randomUUID()}
                         />]);
                     }
@@ -87,7 +87,7 @@ export function DispenseCommodity(props) {
                             amount: formInput[id],
                             commodityID: dispensedCommodityData.DataElement,
                             dispensedBy: user.meRequest,
-                            dispensedTo: name,
+                            dispensedTo: dispenseToName,
                             commodityName: dispensedCommodityData.DataElementName,
                         };
                     logQueue.push(logItem);
@@ -96,6 +96,6 @@ export function DispenseCommodity(props) {
         log(logQueue, "dispense").catch((error) => {
             setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
         });
-        setName("")
+        setDispenseToName("")
     }
 }
