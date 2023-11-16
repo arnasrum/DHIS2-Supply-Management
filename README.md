@@ -1,21 +1,21 @@
 This project was bootstrapped with [DHIS2 Application Platform](https://github.com/dhis2/app-platform).
 
 ## Our app's functionality
-This DHIS2 application provides functionalities such as
-- An overview of the data about commodity stock
-- Dispensing commodities (both singular and bulk)
-- Requesting commodities from other clinics
-- Stock recountinging for adjustments in stock
-- Replenishing commodities for bigger adjustments
+This DHIS2 application provides functionalities such as:
+- An overview of Life-Saving commodities data from our clinic
+- Dispensing commodities (both single values and in bulk)
+- Requesting commodities from nearby clinics
+- Stock recount for adjustments in stock
+- Replenishing commodities for when receiving monthly delieverys (store manager)
 
 ## How the app was implemented
-Every programme from the navigation bar is placed in it's own folder. Each folder contains at least one `.js` file, in some special cases also a `.css`. 
+Each component visible from the navigation bar is placed in it's own folder.  Each folder contains at least one '.js' file, and if necessary, a '.css' file. We decided to place components in separate folders with names representing the functionality. The main reason for this was to organize and structure our project, so we could easily identify which components belonged where. We also have a components folder for shared components, such as InputTable. InputTable is used in three of the components, so we found it natural to extract the component and make it reusable. 
 
-Most of the API-calls for data fetching and mutation is abstracted by making functions in files that can be found inside the `logicLayer` folder. These can be accessed by beying imported in your `.js` files.
+Most of the API-calls for data fetching and mutation is abstracted by making functions in files that can be found inside the 'logicLayer' folder. There is an own file for data queries (API constants) and for API calls and mutations. These can be accessed by being imported in your '.js' files.
 
-Frequently used JSX components have also been placed in `components` folder and can be reused.
+When we started the actual implementation, we decided to first make some sketches, so we all had a shared vision of the apps design and functionality. We divided the pages between us, and created a backlog to keep track of who was working on what, and what was to be done next. We focused on developing the front end first, followed by the logic. As we worked on the project and learned more about developing in React, we discovered better practices to follow in our implementation, such as increasing the focus on modularizing components that could be reused several places. 
 
-## Missing and not working stuff
+## Missing functionality/implementations
 ==Kanskje kan bli skrevet rett før vi leverer inn.
 Da har vi oversikten over hva vi mangler og hva som ikke fungerer.==
 
