@@ -19,7 +19,7 @@ export function RequestCommodity(props) {
     });
     return (
       <>
-        <p>Request commodity from a nearby clinic.</p>
+        <h1>Request commodity from a nearby clinic</h1>
         <CommoditySelect
           commodity={commodity}
           setCommodity={setCommodity}

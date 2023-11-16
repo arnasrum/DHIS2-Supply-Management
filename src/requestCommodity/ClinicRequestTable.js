@@ -61,7 +61,7 @@ export function ClinicRequestTable(props) {
             <AlertStack>{alerts}</AlertStack>
         </>);
     }
-    return <h2>Please Select a Commodity</h2>
+    return <></>
 
     function onSubmit(formInput) {
         const date = new Date();
