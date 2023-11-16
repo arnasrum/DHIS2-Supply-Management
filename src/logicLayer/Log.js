@@ -22,7 +22,7 @@ export async function log(putItem, action) {
         body: JSON.stringify(
             [
                 ...response, 
-                putItem,
+                ...putItem,
             ]),
     })
     if (!response.ok) { throw new Error("failed to log") }
