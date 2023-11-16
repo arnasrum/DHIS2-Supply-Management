@@ -80,7 +80,7 @@ export function ClinicRequestTable(props) {
             <AlertStack>{alerts.map((item) => item)}</AlertStack>
         </>);
     }
-    return <h1>Select a Commodity</h1>
+    return <h2>Please Select a Commodity</h2>
 
     function onSubmit(formInput) {
         const date = new Date();
@@ -105,18 +105,20 @@ export function ClinicRequestTable(props) {
             })
             .then((response) => response.json())
             .then((response) => console.log(response))
-            .then(() => setAlerts((prevState, props) => 
+            .then(() => setAlerts((prevState) => 
                 [...prevState, 
                     <AlertBar success key={crypto.randomUUID()}>
                         {"Requested " + clinicName + " " + formInput[org] + " " + commodity.split("&")[1]}
                     </AlertBar>
                 ]))
-           .catch((error) => {
+            .catch((error) => {
                 setAlerts((prevState) => 
-                [...prevState, 
-                <AlertBar critical key={crypto.randomUUID()}>
-                    {error.message}
-                </AlertBar>])
+                    [...prevState, 
+                        <AlertBar critical key={crypto.randomUUID()}>
+                            {error.message}
+                        </AlertBar>
+                    ]
+                );
                 console.error(error);
             });
         });
