@@ -19,13 +19,13 @@ import {
 } from "@dhis2/ui";
 
 export function InputTable(props) {
-    const onSubmit = props.onSubmit;
-    const headerNames = props.headerNames;
-    const propertyNames = props.propertyNames;
-    // Object, need to have an id property even if not displayed
-    const data = props.data;
-    return (
-      <>
+  const onSubmit = props.onSubmit;
+  const headerNames = props.headerNames;
+  const propertyNames = props.propertyNames;
+  // Object, need to have an id property even if not displayed
+  const data = props.data;
+  return (
+    <>
       <ReactFinalForm.Form onSubmit={onSubmit}>
         {({ handleSubmit, form }) => (
           <form
@@ -35,42 +35,48 @@ export function InputTable(props) {
             }}
             autoComplete="off"
           >
-          <Table>
+            <Table>
               <TableHead>
-              <TableRowHead>
+                <TableRowHead>
                   {headerNames.map((item) => {
-                      return <TableCellHead key={crypto.randomUUID()}>
-                          {item}
+                    return (
+                      <TableCellHead key={crypto.randomUUID()}>
+                        {item}
                       </TableCellHead>
+                    );
                   })}
-              </TableRowHead>
+                </TableRowHead>
               </TableHead>
               <TableBody>
-              {data.map((item) => {
-                return (
-                  <TableRow key={item.DataElement}>
+                {data.map((item) => {
+                  return (
+                    <TableRow key={item.DataElement}>
                       {propertyNames.map((property, i) => {
-                        return <TableCell key={i}>{item[property]}</TableCell>
-                    })}
-                    <TableCell>
-                      <ReactFinalForm.Field
-                        component={InputFieldFF}
-                        name={item.DataElement} 
-                        validate={composeValidators(
-                          number,
-                          createMinNumber(0)
-                        )}
-                      />
-                    </TableCell>
-                  </TableRow>
+                        return <TableCell key={i}>{item[property]}</TableCell>;
+                      })}
+                      <TableCell>
+                        <ReactFinalForm.Field
+                          component={InputFieldFF}
+                          name={item.DataElement}
+                          placeholder={"Not Selected"}
+                          validate={composeValidators(
+                            number,
+                            createMinNumber(0)
+                          )}
+                        />
+                      </TableCell>
+                    </TableRow>
                   );
-              })}
+                })}
               </TableBody>
-          </Table>
-          <Button type="submit" primary>Submit</Button>
+            </Table>{" "}
+            <br />
+            <Button type="submit" primary>
+              Submit
+            </Button>
           </form>
-          )}
+        )}
       </ReactFinalForm.Form>
-      </>
-    );
+    </>
+  );
 }

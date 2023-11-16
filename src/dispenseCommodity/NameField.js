@@ -1,28 +1,41 @@
 import React from "react";
 import { ReactFinalForm, 
-    hasValue, 
-    InputFieldFF,
-    composeValidators, 
-    string
+    InputField,
+    AlertBar
 } from '@dhis2/ui';
 
 
 export function NameField(props) {
 
     const label = props.label;
-    const name = props.name;
+    const id = props.id;
     const placeholder = props.placeholder;
+    const value = props.value;
+    const setValue = props.setValue;
+    const setAlerts = props.setAlerts;
+    const regex = /^\b[a-zA-Z ]+$/;
 
+    function handleChange(event) {
+        if(event.value == "") {}
+        else if(!regex.test(event.value)) {
+            setAlerts((prev) => [...prev, 
+                <AlertBar warning duration={1000} key={crypto.randomUUID()}>
+                    {"Please only use character in name field"}
+                </AlertBar>]
+            );
+            return;
+        }
+        setValue(event.value);
+    }
     return(
         <>
-            <ReactFinalForm.Field
-                component={InputFieldFF} 
-                name={name}
+            <InputField
+                name={id}
                 label={label}
                 placeholder={placeholder}
-                validate={composeValidators(hasValue, string)}  
-            >
-            </ReactFinalForm.Field> 
+                value={value}
+                onChange={handleChange}
+            />
         </>
     );
 }
