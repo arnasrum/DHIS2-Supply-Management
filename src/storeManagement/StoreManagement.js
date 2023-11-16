@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import { getCommoditiesData } from "../logicLayer/ApiCalls";
+import {
+  getCommoditiesData,
+  getCommodityValueFromAPI,
+} from "../logicLayer/ApiCalls";
 import classes from "../App.module.css";
 
 import { AlertBar, AlertStack } from "@dhis2/ui";
@@ -19,21 +22,6 @@ export function StoreManagement() {
   // States for alert bars
   const [alerts, setAlerts] = useState([]);
 
-  // Helper function to fetch current commodity value
-  async function getCommodityValueFromAPI(commodityId) {
-    const period = getCurPeriod();
-    const query = `http://localhost:9999/api/dataValues.json?de=${commodityId}&pe=${period}&ou=xQIU41mR69s&co=rQLFnNXXIL0`;
-    try {
-      const response = await fetch(query);
-      const result = await response.json();
-      // Save value as int
-      const value = parseInt(result[0]);
-      return value;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
   // Function to handle form submit
   function onSubmit(formInput) {
     for (const key in formInput) {
@@ -51,7 +39,6 @@ export function StoreManagement() {
               </AlertBar>,
             ]);
           } else {
-            console.log("Not a number");
             setAlerts((prevState) => [
               ...prevState,
               <AlertBar critical key={crypto.randomUUID()}>

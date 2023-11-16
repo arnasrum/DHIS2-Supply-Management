@@ -34,6 +34,7 @@ export function DispenseCommodity(props) {
     return (
       <>
         <h1>Dispense Commodity</h1>
+        <p>Dispense commodity from stock</p>
         <ReactFinalForm.Form onSubmit={onSubmit}>
           {({ handleSubmit }) => (
             <form onSubmit={handleSubmit}>
