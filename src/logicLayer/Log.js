@@ -10,7 +10,6 @@ export async function log(putItem, action) {
      *     Error: an error describing a failed fetch
      */
     const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/" + action;
-    // Tech debt pls no judge...
     let response = await fetch(postQuery)
     if (!response.ok) { throw new Error("failed to log") }
     response = await response.json()

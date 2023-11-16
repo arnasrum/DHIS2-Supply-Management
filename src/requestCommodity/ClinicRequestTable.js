@@ -66,9 +66,9 @@ export function ClinicRequestTable(props) {
     function onSubmit(formInput) {
         const date = new Date();
         let err = false
-        const loggArr = []
+        const logQueue = []
         Object.entries(formInput).map((pair) => {
-            loggArr.push(
+            logQueue.push(
             {
                 date: date.toISOString(),
                 requestedBy: "xQIU41mR69s",
@@ -77,10 +77,10 @@ export function ClinicRequestTable(props) {
                 amount: pair[1],
             });  
         })
-        log(loggArr, "request").catch((error) => {
+        log(logQueue, "request").catch((error) => {
             setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
             err = true
-        })
+        });
         if (!err) {
             setAlerts((prev) =>  [...prev, 
                 <AlertBar 

@@ -26,125 +26,87 @@ export function StoreManagement() {
   const user = fetchUser();
 
   // Function to handle form submit
-  function onSubmit(formInput) {
-    Object.keys(formInput).map((id) => {
-      const replenishedCommodityData = commodities.filter(
-        (item) => item.DataElement == id
-      )[0];
-      const mutatePromise = changeCommodityCount(
-        mutator,
-        parseInt(formInput[id]) + parseInt(replenishedCommodityData.EndBalance),
-        replenishedCommodityData.DataElement,
-        "rQLFnNXXIL0",
-        getCurPeriod(),
-        "xQIU41mR69s",
-        refetch,
-        error
-      );
-      Promise.resolve(mutatePromise)
-        .then((error) => {
-          if (error) {
-            setAlerts((prev) => [...prev, error[0]]);
-          } else {
-            setAlerts((prev) => [
-              ...prev,
-              <AlertBar success>
-                {formInput[id].toString() +
-                  " " +
-                  replenishedCommodityData.DataElementName +
-                  " added to stock "}
-              </AlertBar>,
-            ]);
-          }
-        })
-        .then(() => {
-          const date = new Date();
-          const logItem = {
-            date: date.toISOString(),
-            amount: formInput[id],
-            commodityID: replenishedCommodityData.DataElement,
-            dispensedBy: user.meRequest.name,
-            commodityName: replenishedCommodityData.DataElementName,
-          };
-          const logPromise = log(logItem, "replenish");
-          Promise.resolve(logPromise)
-            .then((response) => {
-              console.log("errorM", response);
-              if (response) {
-                throw new Error("Logging Error: " + response);
-              }
+    function onSubmit(formInput) {
+        const logQueue = [];
+        Object.keys(formInput).map((id) => {
+        const replenishedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
+        const mutatePromise = changeCommodityCount(
+            mutator,
+            parseInt(formInput[id]) + parseInt(replenishedCommodityData.EndBalance),
+            replenishedCommodityData.DataElement,
+            "rQLFnNXXIL0",
+            getCurPeriod(),
+            "xQIU41mR69s",
+            refetch,
+            error
+        );
+        Promise.resolve(mutatePromise)
+            .then((error) => {
+            if (error) {
+                setAlerts((prev) => [...prev, error[0]]);
+            } else {
+                setAlerts((prev) => [
+                ...prev,
+                <AlertBar success>
+                    {formInput[id].toString() +
+                    " " +
+                    replenishedCommodityData.DataElementName +
+                    " added to stock "}
+                </AlertBar>,
+                ]);
+            }
+            })
+            .then(() => {
+                const date = new Date();
+                const logItem = {
+                    date: date.toISOString(),
+                    amount: formInput[id],
+                    commodityID: replenishedCommodityData.DataElement,
+                    dispensedBy: user.meRequest.name,
+                    commodityName: replenishedCommodityData.DataElementName,
+                };
+                logQueue.push(logItem);
             })
             .catch((error) => {
-              setAlerts((prev) => [
-                ...prev,
-                <AlertBar critical>{error.toString()}</AlertBar>,
-              ]);
+                setAlerts((prev) => [
+                    ...prev,
+                    <AlertBar critical>{error.toString()}</AlertBar>,
+                ]);
             });
-
-          //.then(res => console.log(res))
-        })
-        .catch((error) => {
-          setAlerts((prev) => [
-            ...prev,
-            <AlertBar critical>{error.toString()}</AlertBar>,
-          ]);
         });
-    });
+        log(logQueue, "request").catch((error) => {
+            setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
+            err = true
+        });
+        if (!err) {
+            setAlerts((prev) =>  [...prev, 
+                <AlertBar 
+                    success children={"successfully requested from: " + Object.keys(formInput).reduce((tot, cur) => {
+                        return tot + ", " + orgs.filter((x) => { return x.id === cur })[0].name
+                    }, "").slice(2)} 
+                    key={crypto.randomUUID()}
+                />
+            ]);
+        }
   }
-
-  // for (const key in formInput) {
-  //   const oldValuePromise = getCommodityValueFromAPI(key);
-  //   console.log(comData[0]);
-  //   oldValuePromise
-  //     .then((oldValue) => {
-  //       const value = parseInt(formInput[key]);
-  //       const newValue = oldValue + value;
-  //       if (!isNaN(value)) {
-  //         changeCommodityCount(singleMutator, newValue, key, "rQLFnNXXIL0");
-  //         setAlerts((prevState, props) => [
-  //           ...prevState,
-  //           <AlertBar success key={crypto.randomUUID()}>
-  //             {"Successfully updated stock count"}
-  //           </AlertBar>,
-  //         ]);
-  //       } else {
-  //         setAlerts((prevState) => [
-  //           ...prevState,
-  //           <AlertBar critical key={crypto.randomUUID()}>
-  //             {"Did not update stock count"}
-  //           </AlertBar>,
-  //         ]);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //       setAlerts((prevState) => [
-  //         ...prevState,
-  //         <AlertBar critical key={crypto.randomUUID()}>
-  //           {"Did not update stock count"}
-  //         </AlertBar>,
-  //       ]);
-  //     });
-  // }
-
   // If data is fetched, create a table row for each commodity
   if (!(commodities instanceof Array)) {
     return commodities;
   } else {
     return (
       <div className={classes.storemanagement}>
-        <h1>Replenish Commodities</h1>
-        <p>
-          Update stock count balance when receiving the monthly delivery, enter
-          the amount you received.
-        </p>
-        <InputTable
-          headerNames={["Display Name", "Current Amount", "Amount"]}
-          propertyNames={["DataElementName", "EndBalance"]}
-          onSubmit={onSubmit}
-          data={commodities}
-        ></InputTable>
-        <AlertStack>{alerts.map((item) => item)}</AlertStack>
+            <h1>Replenish Commodities</h1>
+            <p>
+                Update stock count balance when receiving the monthly delivery, enter
+                the amount you received.
+            </p>
+            <InputTable
+                headerNames={["Display Name", "Current Amount", "Amount"]}
+                propertyNames={["DataElementName", "EndBalance"]}
+                onSubmit={onSubmit}
+                data={commodities}
+            ></InputTable>
+            <AlertStack>{alerts}</AlertStack>
       </div>
     );
   }
