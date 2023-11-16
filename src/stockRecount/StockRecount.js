@@ -9,7 +9,7 @@ import { InputTable } from "../components/InputTable";
 import { makeDatavalueMap } from "../logicLayer/Helpers";
 import { log } from "../logicLayer/Log";
 
-export function UpdateCommodity(props) {
+export function StockRecount(props) {
     // states values
     const [alerts, setAlerts] = useState([]);
     const [mutator, error] = getMultipleChangeMutator();
@@ -74,7 +74,6 @@ export function UpdateCommodity(props) {
                             if(updatedCommodityID == curVal.DataElement) return [...sum, curVal];
                                 return sum; 
                             }, [])[0];
-                        console.log(formInput);
                         const logItem = 
                             {
                                 commodityID: updatedCommodity.DataElement,

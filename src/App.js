@@ -5,10 +5,9 @@ import { RequestCommodity } from "./requestCommodity/RequestCommodity";
 import { Navigation } from "./navigation/Navigation.js";
 import { CommodityStock } from "./commodityStock/CommodityStock.js";
 import { DispenseCommodity } from "./dispenseCommodity/DispenseCommodity";
-import { UpdateCommodity } from "./updateCommodity/UpdateCommodity";
-import { StoreManagement } from "./storeManagement/StoreManagement";
+import { StockRecount } from "./stockRecount/StockRecount";
 import { useState } from "react";
-import { getCommoditiesData } from "./logicLayer/ApiCalls";
+import { ReplenishCommodities } from "./replenishCommodities/ReplenishCommodities";
 
 function MyApp() {
   const [activePage, setActivePage] = useState("Browse");
@@ -28,8 +27,8 @@ function MyApp() {
           {activePage === "CommodityStock" && <CommodityStock />}
           {activePage === "DispenseCommodity" && <DispenseCommodity />}
           {activePage === "RequestCommodity" && <RequestCommodity />}
-          {activePage === "UpdateCommodity" && <UpdateCommodity />}
-          {activePage === "StoreManagement" && <StoreManagement />}
+          {activePage === "StockRecount" && <StockRecount />}
+          {activePage === "ReplenishCommodities" && <ReplenishCommodities />}
         </div>
       </div>
     );

@@ -96,6 +96,6 @@ export function DispenseCommodity(props) {
         log(logQueue, "dispense").catch((error) => {
             setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
         });
-        setName("")
+        setDispenseToName("")
     }
 }

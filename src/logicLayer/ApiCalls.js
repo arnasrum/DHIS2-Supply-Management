@@ -94,7 +94,7 @@ const getCommoditiesValues = (
         return [<CircularLoader />, refetch];
     }
     if (data) {
-        return [data.comcommodityValues.dataValues, refetch];
+        return [data.comVals.dataValues, refetch];
     }
 };
 
