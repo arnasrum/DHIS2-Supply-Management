@@ -1,6 +1,7 @@
 import { useDataMutation } from "@dhis2/app-runtime";
 import { getCurPeriod } from "./Helpers";
 import { dataMutationQuery, dataMutationQueryMultiple } from "./apiConstants";
+import { AlertBar } from "@dhis2/ui";
 
 const getSingleChangeMutator = () => {
     /**
@@ -8,9 +9,10 @@ const getSingleChangeMutator = () => {
      * 
      * returns:
      *     mutate: a function whom on call does the mutation
+     *     error: where the error message will be pressent
      */
-    const [mutate] = useDataMutation(dataMutationQuery);
-    return mutate
+    const [mutate, {error}] = useDataMutation(dataMutationQuery);
+    return [mutate, error]
 }
 
 const getMultipleChangeMutator = () => {
@@ -19,9 +21,10 @@ const getMultipleChangeMutator = () => {
      * 
      * returns:
      *     mutate: a function whom on call does the mutation
+     *     error: where the error message will be pressent
      */
-    const [mutate] = useDataMutation(dataMutationQueryMultiple);
-    return mutate
+    const [mutate, {error}] = useDataMutation(dataMutationQueryMultiple);
+    return [mutate, error]
 }
 
 const changeCommodityCount = async (
@@ -31,7 +34,8 @@ const changeCommodityCount = async (
     categoryOptionCombo = "HllvX50cXC0",
     period = getCurPeriod(), 
     orgUnit = "xQIU41mR69s",
-    refetch = null
+    refetch = null,
+    error = null
     ) => {
     /**
      * uses a mutator to do a post query
@@ -45,6 +49,10 @@ const changeCommodityCount = async (
      *     period (default: current period): a perdiod
      *     orgUnit (default: "xQIU41mR69s"): org unit id
      *     refetch (default: null): a function used to reftch, no refetching is done if not provided
+     *     error (default: null): an error from the mutation which only is pressent on error when posting, error is not handeled if not provided
+     * 
+     * returns:
+     *     promis: it is null if all is well, else is it a jsx alert giving an error
     */
     // do muattion
     await mutator({
@@ -54,13 +62,28 @@ const changeCommodityCount = async (
             value: value,
             categoryOptionCombo: categoryOptionCombo
     });
+    // on error
+    if (error) {
+        console.error(error)
+        return (
+        <AlertBar
+        warning 
+        key={crypto.randomUUID()}
+        children={"there was an error when posting, see consol for more information"}
+        />)
+    }
     // refetch
     if (refetch) {
         refetch()
     }
+    return null
 }
 
-const changeCommodityCountMultiple = async (mutator, dataValueArray, refetch = null) => {
+const changeCommodityCountMultiple = async (
+    mutator, 
+    dataValueArray, 
+    refetch = null,
+    error = null) => {
     /**
      * mutate multiple commodities
      * this function is async
@@ -73,13 +96,28 @@ const changeCommodityCountMultiple = async (mutator, dataValueArray, refetch = n
      *         categoryOptionCombo (default "HllvX50cXC0"): category option combo, the default id is for "default" catoegory option
      *         period (default: null): a perdiod, current period will be used if not provided
      *         orgUnit (default: "xQIU41mR69s"): org unit id
-     *     refetch (default: null): a function used to reftch, no refetching is done if not provided
+     *         refetch (default: null): a function used to reftch, no refetching is done if not provided
+     *         error (default: null): an error from the mutation which only is pressent on error when posting, error is not handeled if not provided
+     * 
+     * returns:
+     *     promis: it is null if all is well, else is it a jsx alert giving an error
      */
     await mutator({dataValues: dataValueArray})
+    // on error
+    if (error) {
+        console.error(error)
+        return (
+        <AlertBar
+        warning 
+        key={crypto.randomUUID()}
+        children={"there was an error when posting, see consol for more information"}
+        />)
+    }
     // refetch
     if (refetch) {
         refetch()
     }
+    return null
 }
 
 export { 

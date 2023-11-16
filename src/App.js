@@ -3,7 +3,7 @@ import classes from "./App.module.css";
 
 import { RequestCommodity } from "./requestCommodity/RequestCommodity";
 import { Navigation } from "./navigation/Navigation.js";
-import { CommodityStock } from "./commodityTable/CommodityStock.js";
+import { CommodityStock } from "./commodityStock/CommodityStock.js";
 import { DispenseCommodity } from "./dispenseCommodity/DispenseCommodity";
 import { UpdateCommodity } from "./updateCommodity/UpdateCommodity";
 import { StoreManagement } from "./storeManagement/StoreManagement";
