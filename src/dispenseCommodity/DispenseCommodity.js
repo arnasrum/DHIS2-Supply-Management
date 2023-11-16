@@ -37,29 +37,19 @@ export function DispenseCommodity(props) {
         <AlertStack> {alerts.map((item) => item)} </AlertStack>
       </>
     );
-  }
-  if (commodities) {
-    return <>{commodities}</>;
-  }
-
-  function onSubmit(formInput) {
-    try {
-      if (name === "") {
-        throw new Error("Please input a name");
-      }
-    } catch (error) {
-      setAlerts((prev) => [
-        ...prev,
-        <AlertBar critical>{error.toString()}</AlertBar>,
-      ]);
-      return;
     }
-
+    if (commodities) {
+        return <>{commodities}</>;
+    }
     function onSubmit(formInput) {
         if(name === "") {
-          setAlerts((prev) =>  [...prev, <AlertBar info children={"Please input a name"} key={crypto.randomUUID()}/>]);
-          return
+            setAlerts((prev) =>  [...prev, <AlertBar info children={"Please input a name"} key={crypto.randomUUID()}/>]);
+            return;
         }        
+        if(Object.keys(formInput).length <= 0) {
+            setAlerts((prev) => [...prev, <AlertBar info key={crypto.randomUUID()} children={"No value was provided"} />]);
+            return;
+        }
 
         Object.keys(formInput).map((id) => {
             const dispensedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
@@ -81,10 +71,10 @@ export function DispenseCommodity(props) {
                     } else {
                         setAlerts((prev) => [...prev,
                         <AlertBar success 
-                          children={formInput[id].toString() + " " +
-                          dispensedCommodityData.DataElementName + " " +
-                          "dispensed to " + name}
-                          key={crypto.randomUUID()}
+                            children={formInput[id].toString() + " " +
+                            dispensedCommodityData.DataElementName + " " +
+                            "dispensed to " + name}
+                            key={crypto.randomUUID()}
                         />]);
                     }
                 })
@@ -95,12 +85,12 @@ export function DispenseCommodity(props) {
                             date: date.toISOString(),
                             amount: formInput[id],
                             commodityID: dispensedCommodityData.DataElement,
-                            dispensedBy: user.meRequest.name,
+                            dispensedBy: user.meRequest,
                             dispensedTo: name,
                             commodityName: dispensedCommodityData.DataElementName,
                         };
                     log(logItem, "dispense").catch((error) => {
-                      setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
+                        setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
                     }); 
                 }) 
         })
