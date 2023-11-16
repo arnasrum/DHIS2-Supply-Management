@@ -51,6 +51,7 @@ export function DispenseCommodity(props) {
             return;
         }
 
+        const logQueue = [];
         Object.keys(formInput).map((id) => {
             const dispensedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
             const mutatePromise = consumeCommodityCount(
@@ -89,11 +90,12 @@ export function DispenseCommodity(props) {
                             dispensedTo: name,
                             commodityName: dispensedCommodityData.DataElementName,
                         };
-                    log(logItem, "dispense").catch((error) => {
-                        setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
-                    }); 
+                    logQueue.push(logItem);
                 }) 
         })
+        log(logQueue, "dispense").catch((error) => {
+            setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
+        });
         setName("")
     }
 }
