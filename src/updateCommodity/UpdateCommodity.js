@@ -52,41 +52,44 @@ export function UpdateCommodity(props) {
                         return [
                             ...prev,
                             <AlertBar
-                            success
-                            key={keyCount}
-                            children={
-                                commodities.reduce((tot, curVal) => {
-                                    if (Object.keys(formInput).includes(curVal.DataElement)) {
-                                        return tot + ", " + curVal.DataElementName;
-                                    }
-                                    return tot;
-                                }, "")
-                                .slice(2) + " successfully recounted"
-                            }
+                                success
+                                key={keyCount}
+                                children={
+                                    commodities.reduce((tot, curVal) => {
+                                        if (Object.keys(formInput).includes(curVal.DataElement)) {
+                                            return tot + ", " + curVal.DataElementName;
+                                        }
+                                        return tot;
+                                    }, "")
+                                    .slice(2) + " successfully recounted"
+                                }
                             />,
                         ];
                     }); 
-                    const updatedCommodityID =  Object.keys(formInput)[0];
-                    const updatedCommodity = commodities.reduce( (sum, curVal) => {
-                        if(updatedCommodityID == curVal.DataElement) return [...sum, curVal];
-                            return sum; 
-                        }, [])[0];
-                    console.log(updatedCommodity);
 
                     const date = new Date();
-                    const logItem = 
-                        {
-                            commodityID: updatedCommodity.DataElement,
-                            commoditiesName: updatedCommodity.DataElementName,
-                            date: date,
-                            oldValue: updatedCommodity.EndBalance,
-                            newValue: formInput[updatedCommodityID],
-                            updatedBy: user.meRequest,
-                        };
-                    console.log("logging");
-                    log(logItem, "update").catch((error) => {
+                    const logQueue = [];
+                    Object.keys(formInput).forEach((updatedCommodityID) => {
+                        const updatedCommodity = commodities.reduce( (sum, curVal) => {
+                            if(updatedCommodityID == curVal.DataElement) return [...sum, curVal];
+                                return sum; 
+                            }, [])[0];
+                        console.log(formInput);
+                        const logItem = 
+                            {
+                                commodityID: updatedCommodity.DataElement,
+                                commodityName: updatedCommodity.DataElementName,
+                                date: date,
+                                oldValue: updatedCommodity.EndBalance,
+                                newValue: formInput[updatedCommodityID],
+                                updatedBy: user.meRequest,
+                            };
+                        logQueue.push(logItem);
+                    });
+                    log(logQueue, "update").catch((error) => {
                         setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
-                    }); 
+                    });
+    
                 }
             })
     }
