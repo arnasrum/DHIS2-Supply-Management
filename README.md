@@ -6,7 +6,7 @@ This DHIS2 application provides functionalities such as:
 - Dispensing commodities (both single values and in bulk)
 - Requesting commodities from nearby clinics
 - Stock recount for adjustments in stock
-- Replenishing commodities for when receiving monthly delieverys (store manager)
+- Replenishing commodities for when receiving monthly deliveries (store manager)
 
 ## How the app was implemented
 Each component visible from the navigation bar is placed in it's own folder.  Each folder contains at least one '.js' file, and if necessary, a '.css' file. We decided to place components in separate folders with names representing the functionality. The main reason for this was to organize and structure our project, so we could easily identify which components belonged where. We also have a components folder for shared components, such as InputTable. InputTable is used in three of the components, so we found it natural to extract the component and make it reusable. 
