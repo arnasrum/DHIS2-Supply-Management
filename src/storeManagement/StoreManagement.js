@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 
 import {
+  fetchUser,
   getCommoditiesData,
   getCommodityValueFromAPI,
 } from "../logicLayer/ApiCalls";
 import classes from "../App.module.css";
+import { log } from "../logicLayer/Log";
 
 import { AlertBar, AlertStack } from "@dhis2/ui";
 import { InputTable } from "../components/InputTable";
@@ -16,52 +18,118 @@ import { getCurPeriod } from "../logicLayer/Helpers";
 
 export function StoreManagement() {
   // Get values and commodities form the API
-  const comData = getCommoditiesData();
+  const [commodities, refetch] = getCommoditiesData();
   // Used for data mutation
-  const singleMutator = getSingleChangeMutator();
+  const [mutator, error] = getSingleChangeMutator();
   // States for alert bars
   const [alerts, setAlerts] = useState([]);
+  const user = fetchUser();
 
   // Function to handle form submit
   function onSubmit(formInput) {
-    for (const key in formInput) {
-      const oldValuePromise = getCommodityValueFromAPI(key);
-      oldValuePromise
-        .then((oldValue) => {
-          const value = parseInt(formInput[key]);
-          const newValue = oldValue + value;
-          if (!isNaN(value)) {
-            changeCommodityCount(singleMutator, newValue, key, "rQLFnNXXIL0");
-            setAlerts((prevState, props) => [
-              ...prevState,
-              <AlertBar success key={crypto.randomUUID()}>
-                {"Successfully updated stock count"}
-              </AlertBar>,
-            ]);
+    Object.keys(formInput).map((id) => {
+      const replenishedCommodityData = commodities.filter(
+        (item) => item.DataElement == id
+      )[0];
+      const mutatePromise = changeCommodityCount(
+        mutator,
+        parseInt(formInput[id]) + parseInt(replenishedCommodityData.EndBalance),
+        replenishedCommodityData.DataElement,
+        "rQLFnNXXIL0",
+        getCurPeriod(),
+        "xQIU41mR69s",
+        refetch,
+        error
+      );
+      Promise.resolve(mutatePromise)
+        .then((error) => {
+          if (error) {
+            setAlerts((prev) => [...prev, error[0]]);
           } else {
-            setAlerts((prevState) => [
-              ...prevState,
-              <AlertBar critical key={crypto.randomUUID()}>
-                {"Did not update stock count"}
+            setAlerts((prev) => [
+              ...prev,
+              <AlertBar success>
+                {formInput[id].toString() +
+                  " " +
+                  replenishedCommodityData.DataElementName +
+                  " added to stock "}
               </AlertBar>,
             ]);
           }
         })
+        .then(() => {
+          const date = new Date();
+          const logItem = {
+            date: date.toISOString(),
+            amount: formInput[id],
+            commodityID: replenishedCommodityData.DataElement,
+            dispensedBy: user.meRequest.name,
+            commodityName: replenishedCommodityData.DataElementName,
+          };
+          const logPromise = log(logItem, "replenish");
+          Promise.resolve(logPromise)
+            .then((response) => {
+              console.log("errorM", response);
+              if (response) {
+                throw new Error("Logging Error: " + response);
+              }
+            })
+            .catch((error) => {
+              setAlerts((prev) => [
+                ...prev,
+                <AlertBar critical>{error.toString()}</AlertBar>,
+              ]);
+            });
+
+          //.then(res => console.log(res))
+        })
         .catch((error) => {
-          console.error("Error fetching data:", error);
-          setAlerts((prevState) => [
-            ...prevState,
-            <AlertBar critical key={crypto.randomUUID()}>
-              {"Did not update stock count"}
-            </AlertBar>,
+          setAlerts((prev) => [
+            ...prev,
+            <AlertBar critical>{error.toString()}</AlertBar>,
           ]);
         });
-    }
+    });
   }
 
+  // for (const key in formInput) {
+  //   const oldValuePromise = getCommodityValueFromAPI(key);
+  //   console.log(comData[0]);
+  //   oldValuePromise
+  //     .then((oldValue) => {
+  //       const value = parseInt(formInput[key]);
+  //       const newValue = oldValue + value;
+  //       if (!isNaN(value)) {
+  //         changeCommodityCount(singleMutator, newValue, key, "rQLFnNXXIL0");
+  //         setAlerts((prevState, props) => [
+  //           ...prevState,
+  //           <AlertBar success key={crypto.randomUUID()}>
+  //             {"Successfully updated stock count"}
+  //           </AlertBar>,
+  //         ]);
+  //       } else {
+  //         setAlerts((prevState) => [
+  //           ...prevState,
+  //           <AlertBar critical key={crypto.randomUUID()}>
+  //             {"Did not update stock count"}
+  //           </AlertBar>,
+  //         ]);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //       setAlerts((prevState) => [
+  //         ...prevState,
+  //         <AlertBar critical key={crypto.randomUUID()}>
+  //           {"Did not update stock count"}
+  //         </AlertBar>,
+  //       ]);
+  //     });
+  // }
+
   // If data is fetched, create a table row for each commodity
-  if (!(comData[0] instanceof Array)) {
-    return comData[0];
+  if (!(commodities instanceof Array)) {
+    return commodities;
   } else {
     return (
       <div className={classes.storemanagement}>
@@ -74,7 +142,7 @@ export function StoreManagement() {
           headerNames={["Display Name", "Current Amount", "Amount"]}
           propertyNames={["DataElementName", "EndBalance"]}
           onSubmit={onSubmit}
-          data={comData[0]}
+          data={commodities}
         ></InputTable>
         <AlertStack>{alerts.map((item) => item)}</AlertStack>
       </div>

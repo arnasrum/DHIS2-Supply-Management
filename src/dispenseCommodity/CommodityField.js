@@ -15,10 +15,10 @@ export function CommodityField(props) {
             label="Commodity:"
             placeholder="Select Commodity"
             validate={composeValidators(hasValue)}
-            options={data.dataSetElements.map((item) => {
+            options={data.map((item) => {
                 return {
-                "label":item.dataElement.displayName.split(" - ")[1],
-                "value": item.dataElement.id.toString() + "&" + item.dataElement.displayName.split(" - ")[1]
+                "label":item.DataElementName,
+                "value": item.DataElement + "&" + item.DataElementName
             }})}
         />
     );

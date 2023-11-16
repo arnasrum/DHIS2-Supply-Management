@@ -58,6 +58,7 @@ export function InputTable(props) {
                         <ReactFinalForm.Field
                           component={InputFieldFF}
                           name={item.DataElement}
+                          placeholder={"Not Selected"}
                           validate={composeValidators(
                             number,
                             createMinNumber(0)

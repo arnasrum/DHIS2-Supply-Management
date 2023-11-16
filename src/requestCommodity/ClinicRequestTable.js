@@ -47,17 +47,81 @@ export function ClinicRequestTable(props) {
         });
     });
 
-    // Wait for all fetch requests to complete
-    Promise.all(fetchPromises)
-      .then((data) => {
-        return data;
-      })
-      .then((data) => {
-        data.forEach((item) => {
-          item["value"] = getCommodityValue(
-            item.DataElements,
-            commodity.split("&")[0]
-          );
+        // Wait for all fetch requests to complete
+        Promise.all(fetchPromises)
+            .then((data) => {
+                return data;
+            })
+            .then((data) => {
+                data.forEach((item) => {
+                    item["value"] = getCommodityValue(item.DataElements, commodity.split("&")[0]);
+                });
+                setOrgData(data); 
+                return data;
+            })
+            .then(() => setLoading(false))
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
+        }, [commodity]);
+
+    if(loading) {
+        return <CircularLoader/>
+    }
+    if(orgData.length > 0) {
+        console.log(orgData);
+        return (
+        <>
+            <InputTable 
+                headerNames={["Clinic", "Value", "Request Amount"]}
+                propertyNames={["DataElementName", "value"]}
+                onSubmit={onSubmit}
+                data={orgData}
+            />
+            <AlertStack>{alerts.map((item) => item)}</AlertStack>
+        </>);
+    }
+    return <h2>Please Select a Commodity</h2>
+
+    function onSubmit(formInput) {
+        const date = new Date();
+        const postQuery = "http://localhost:9999/api/dataStore/IN5320-27-requests/";
+        Object.keys(formInput).forEach((org) => {
+            const clinicName = orgs.filter((item) => item.id == org)[0].name;
+            console.log(clinicName);
+            fetch(postQuery + crypto.randomUUID(), {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({
+                    commodityID: commodity.split("&")[0],
+                    commodityName: commodity.split("&")[1],
+                    requestedClinic: org,
+                    date: date.toISOString(),
+                    requestedAmount: formInput[org],
+                    requestBy: props.usersOrg,
+                    requestedClinicName: clinicName,
+                }),
+            })
+            .then((response) => response.json())
+            .then((response) => console.log(response))
+            .then(() => setAlerts((prevState) => 
+                [...prevState, 
+                    <AlertBar success key={crypto.randomUUID()}>
+                        {"Requested " + clinicName + " " + formInput[org] + " " + commodity.split("&")[1]}
+                    </AlertBar>
+                ]))
+            .catch((error) => {
+                setAlerts((prevState) => 
+                    [...prevState, 
+                        <AlertBar critical key={crypto.randomUUID()}>
+                            {error.message}
+                        </AlertBar>
+                    ]
+                );
+                console.error(error);
+            });
         });
         setOrgData(data);
         return data;

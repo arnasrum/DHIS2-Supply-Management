@@ -1,107 +1,127 @@
-import React from "react";
-import { useDataQuery } from "@dhis2/app-runtime";
-import { ReactFinalForm, CircularLoader, Button } from "@dhis2/ui";
+import React, { useState } from "react";
+import { AlertBar, AlertStack, Divider } from "@dhis2/ui";
 
-import { AmountField } from "./AmountField";
-import { CommodityField } from "./CommodityField";
 import { NameField } from "./NameField";
+import { getCommoditiesData, fetchUser } from "../logicLayer/ApiCalls";
+import { consumeCommodityCount, getCurPeriod } from "../logicLayer/Helpers";
+import { getMultipleChangeMutator } from "../logicLayer/ApiMuatations";
+import { InputTable } from "../components/InputTable";
+import { log } from "../logicLayer/Log";
 
-const request = {
-  meRequest: {
-    resource: "/me.json",
-    params: {
-      fields: "id,name,organisationUnits",
-    },
-  },
-  commodityFieldRequest: {
-    resource: `/dataSets/ULowA8V3ucd`,
-    params: {
-      fields: "displayName,dataSetElements[dataElement[id,displayName,*]]",
-    },
-  },
-};
 export function DispenseCommodity(props) {
-  const { loading, error, data } = useDataQuery(request);
-  if (error) {
-    return <span>ERROR: {error.message}</span>;
-  }
+  const [mutator, error] = getMultipleChangeMutator();
+  const user = fetchUser();
+  const [commodities, refetch] = getCommoditiesData();
+  const [alerts, setAlerts] = useState([]);
+  const [name, setName] = useState("");
 
-  if (loading) {
-    return <CircularLoader />;
-  }
-
-  if (data) {
+  if (Array.isArray(commodities)) {
     return (
       <>
         <h1>Dispense Commodity</h1>
-        <p>Dispense commodity from stock</p>
-        <ReactFinalForm.Form onSubmit={onSubmit}>
-          {({ handleSubmit }) => (
-            <form onSubmit={handleSubmit}>
-              <CommodityField data={data.commodityFieldRequest} />
-              <AmountField />
-              <NameField
-                name="dispensedTo"
-                label="Dispensed To: "
-                placeholder="Name of receiver"
-              />
-              <br />
-              <Button type="submit" primary>
-                Dispense
-              </Button>
-            </form>
-          )}
-        </ReactFinalForm.Form>
+        <NameField
+          label={"Dispense To: "}
+          name={"dispensedTo"}
+          placeholder={"Dispense To"}
+          value={name}
+          setValue={setName}
+          setAlerts={setAlerts}
+        />
+        <Divider />
+        <InputTable
+          data={commodities}
+          onSubmit={onSubmit}
+          headerNames={["Commidity", "Current Stock", "Dispense Amount"]}
+          propertyNames={["DataElementName", "EndBalance"]}
+        />
+        <AlertStack> {alerts.map((item) => item)} </AlertStack>
       </>
     );
   }
+  if (commodities) {
+    return <>{commodities}</>;
+  }
+
   function onSubmit(formInput) {
-    let query = "http://localhost:9999/api/dataValues.json?";
-    query = query + "de=" + formInput.commodity.split("&")[0];
-    const date = new Date();
-    const datelist = date.toISOString().split("-");
-    query = query + "&pe=" + datelist[0] + datelist[1];
-    query = query + "&ou=xQIU41mR69s";
-    query = query + "&co=J2Qf1jtZuj8";
-    alert(
-      formInput.dispensedAmount +
-        " " +
-        formInput.commodity.split("&")[1] +
-        " dispensed to " +
-        formInput.dispensedTo
-    );
-    fetch(query)
-      .then((response) => response.json())
-      .then((data) => {
-        const newStock = parseInt(data[0]) - formInput.dispensedAmount;
-        if (newStock < 0) {
-          throw new Error("Dispensed amount is higher than current stock");
-        }
-        fetch(query + "&value=" + newStock.toString(), {
-          method: "POST",
-        });
-      })
-      .then((response) => {
-        const postQuery =
-          "http://localhost:9999/api/dataStore/IN5320-27/" +
-          crypto.randomUUID();
-        fetch(postQuery, {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            date: date.toISOString(),
-            amount: formInput.dispensedAmount,
-            commodityID: formInput.commodity.split("&")[0],
-            dispensedBy: data.meRequest.name,
-            dispensedTo: formInput.dispensedTo,
-            commodityName: formInput.commodity.split("&")[1],
-          }),
+    try {
+      if (name === "") {
+        throw new Error("Please input a name");
+      }
+    } catch (error) {
+      setAlerts((prev) => [
+        ...prev,
+        <AlertBar critical>{error.toString()}</AlertBar>,
+      ]);
+      return;
+    }
+
+    Object.keys(formInput).map((id) => {
+      const dispensedCommodityData = commodities.filter(
+        (item) => item.DataElement == id
+      )[0];
+      const mutatePromise = consumeCommodityCount(
+        mutator,
+        formInput[id],
+        dispensedCommodityData.EndBalance,
+        dispensedCommodityData.Consumption,
+        dispensedCommodityData.DataElement,
+        getCurPeriod(),
+        "xQIU41mR69s",
+        refetch,
+        error
+      );
+      Promise.resolve(mutatePromise)
+        .then((values) => {
+          if (values) {
+            setAlerts((prev) => [...prev, values[0]]);
+          } else {
+            setAlerts((prev) => [
+              ...prev,
+              <AlertBar success>
+                {formInput[id].toString() +
+                  " " +
+                  dispensedCommodityData.DataElementName +
+                  " " +
+                  "dispensed to " +
+                  name}
+              </AlertBar>,
+            ]);
+          }
         })
-          .then((response) => response.json())
-          .then((response) => console.log(response));
-      })
-      .catch((error) => console.error(error));
+        .then(() => {
+          const date = new Date();
+          const logItem = {
+            date: date.toISOString(),
+            amount: formInput[id],
+            commodityID: dispensedCommodityData.DataElement,
+            dispensedBy: user.meRequest.name,
+            dispensedTo: name,
+            commodityName: dispensedCommodityData.DataElementName,
+          };
+          const logPromise = log(logItem, "dispense");
+          Promise.resolve(logPromise)
+            .then((response) => {
+              console.log("errorM", response);
+              if (response) {
+                throw new Error("Logging Error: " + response);
+              }
+            })
+            .catch((error) => {
+              setAlerts((prev) => [
+                ...prev,
+                <AlertBar critical>{error.toString()}</AlertBar>,
+              ]);
+            });
+
+          //.then(res => console.log(res))
+        })
+        .catch((error) => {
+          console.log("here");
+          setAlerts((prev) => [
+            ...prev,
+            <AlertBar critical>{error.toString()}</AlertBar>,
+          ]);
+        });
+    });
   }
 }

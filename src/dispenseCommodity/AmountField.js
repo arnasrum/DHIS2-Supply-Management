@@ -15,7 +15,7 @@ export function AmountField() {
             <ReactFinalForm.Field
                 component={InputFieldFF} 
                 name="dispensedAmount"
-                label="Amount:"
+                label="Dispense Amount:"
                 placeholder="Input amount to be dispensed"
                 validate={composeValidators(hasValue, integer, createMinNumber(1))}  
             >
