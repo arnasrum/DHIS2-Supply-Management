@@ -55,73 +55,55 @@ export function DispenseCommodity(props) {
       return;
     }
 
-    Object.keys(formInput).map((id) => {
-      const dispensedCommodityData = commodities.filter(
-        (item) => item.DataElement == id
-      )[0];
-      const mutatePromise = consumeCommodityCount(
-        mutator,
-        formInput[id],
-        dispensedCommodityData.EndBalance,
-        dispensedCommodityData.Consumption,
-        dispensedCommodityData.DataElement,
-        getCurPeriod(),
-        "xQIU41mR69s",
-        refetch,
-        error
-      );
-      Promise.resolve(mutatePromise)
-        .then((values) => {
-          if (values) {
-            setAlerts((prev) => [...prev, values[0]]);
-          } else {
-            setAlerts((prev) => [
-              ...prev,
-              <AlertBar success>
-                {formInput[id].toString() +
-                  " " +
-                  dispensedCommodityData.DataElementName +
-                  " " +
-                  "dispensed to " +
-                  name}
-              </AlertBar>,
-            ]);
-          }
-        })
-        .then(() => {
-          const date = new Date();
-          const logItem = {
-            date: date.toISOString(),
-            amount: formInput[id],
-            commodityID: dispensedCommodityData.DataElement,
-            dispensedBy: user.meRequest.name,
-            dispensedTo: name,
-            commodityName: dispensedCommodityData.DataElementName,
-          };
-          const logPromise = log(logItem, "dispense");
-          Promise.resolve(logPromise)
-            .then((response) => {
-              console.log("errorM", response);
-              if (response) {
-                throw new Error("Logging Error: " + response);
-              }
-            })
-            .catch((error) => {
-              setAlerts((prev) => [
-                ...prev,
-                <AlertBar critical>{error.toString()}</AlertBar>,
-              ]);
-            });
+    function onSubmit(formInput) {
+        if(name === "") {
+          setAlerts((prev) =>  [...prev, <AlertBar info children={"Please input a name"} key={crypto.randomUUID()}/>]);
+          return
+        }        
 
-          //.then(res => console.log(res))
+        Object.keys(formInput).map((id) => {
+            const dispensedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
+            const mutatePromise = consumeCommodityCount(
+                mutator, 
+                formInput[id],
+                dispensedCommodityData.EndBalance,
+                dispensedCommodityData.Consumption,
+                dispensedCommodityData.DataElement,
+                getCurPeriod(),
+                "xQIU41mR69s",
+                refetch,
+                error
+            );
+            Promise.resolve(mutatePromise)
+                .then((values) => {
+                    if (values) {
+                        setAlerts((prev) => [...prev, values[0]])
+                    } else {
+                        setAlerts((prev) => [...prev,
+                        <AlertBar success 
+                          children={formInput[id].toString() + " " +
+                          dispensedCommodityData.DataElementName + " " +
+                          "dispensed to " + name}
+                          key={crypto.randomUUID()}
+                        />]);
+                    }
+                })
+                .then(() => {
+                    const date = new Date();
+                    const logItem = 
+                        {
+                            date: date.toISOString(),
+                            amount: formInput[id],
+                            commodityID: dispensedCommodityData.DataElement,
+                            dispensedBy: user.meRequest.name,
+                            dispensedTo: name,
+                            commodityName: dispensedCommodityData.DataElementName,
+                        };
+                    log(logItem, "dispense").catch((error) => {
+                      setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
+                    }); 
+                }) 
         })
-        .catch((error) => {
-          console.log("here");
-          setAlerts((prev) => [
-            ...prev,
-            <AlertBar critical>{error.toString()}</AlertBar>,
-          ]);
-        });
-    });
-  }
+        setName("")
+    }
 }
