@@ -8,7 +8,7 @@ export function CommoditySelect(props) {
     const setCommodity = props.setCommodity;
 
     const sendRequest = () => {
-        if (Array.isArray(commodities[0])) {
+        if (Array.isArray(commodities)) {
             return (
                 <label>
                 Select commodity:
@@ -17,13 +17,12 @@ export function CommoditySelect(props) {
                     selected={commodity}
                     placeholder="Select required commodity"
                 >
-                {commodities[0].map((item) => {
-                const name = item.DataElementName;
+                {commodities.map((item) => {
                     return (
                     <SingleSelectOption
                         key={crypto.randomUUID()}
-                        label={name}
-                        value={item.DataElement}
+                        label={item.displayName}
+                        value={item.id}
                         />
                     );
                 })}

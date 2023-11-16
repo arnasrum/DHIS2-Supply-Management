@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import { CommoditySelect } from "./CommoditySelect";
 import { ClinicRequestTable } from "./ClinicRequestTable";
 
-import { fetchOrgUnit, getCommoditiesData } from "../logicLayer/ApiCalls";
+import { fetchOrgUnit, getCommoditiesNames } from "../logicLayer/ApiCalls";
 
 export function RequestCommodity(props) {
   // Replace with logged in users org
   const myOrg = "xQIU41mR69s";
   const orgs = fetchOrgUnit();
-  const commodityData = getCommoditiesData();
+  const commodityName = getCommoditiesNames();
   const [commodity, setCommodity] = useState("");
 
   if (Array.isArray(orgs)) {
@@ -23,7 +23,7 @@ export function RequestCommodity(props) {
         <CommoditySelect
           commodity={commodity}
           setCommodity={setCommodity}
-          commodities={commodityData}
+          commodities={commodityName}
         />
         <ClinicRequestTable
           orgs={filteredOrgs}
