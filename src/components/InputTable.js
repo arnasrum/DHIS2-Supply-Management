@@ -61,7 +61,7 @@ export function InputTable(props) {
                             placeholder={"Not Selected"}
                             validate={composeValidators(
                                 number,
-                                createMinNumber(1)
+                                createMinNumber(0)
                             )}
                             />
                         </TableCell>
