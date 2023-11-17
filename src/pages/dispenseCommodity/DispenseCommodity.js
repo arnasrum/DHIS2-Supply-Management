@@ -2,18 +2,18 @@ import React, { useState } from "react";
 import { AlertBar, AlertStack, Divider } from "@dhis2/ui";
 
 import { NameField } from "./NameField";
-import { getCommoditiesData, fetchUser } from "../logicLayer/ApiCalls";
-import { consumeCommodityCount, getCurPeriod } from "../logicLayer/Helpers";
-import { getMultipleChangeMutator } from "../logicLayer/ApiMuatations";
-import { InputTable } from "../components/InputTable";
-import { log } from "../logicLayer/Log";
+import { getCommoditiesData, fetchUser } from "../../logicLayer/ApiCalls";
+import { consumeCommodityCount, getCurPeriod } from "../../logicLayer/Helpers";
+import { getMultipleChangeMutator } from "../../logicLayer/ApiMutations";
+import { InputTable } from "../../components/InputTable";
+import { log } from "../../logicLayer/Log";
 
 export function DispenseCommodity(props) {
   const [mutator, error] = getMultipleChangeMutator();
-  const user = fetchUser();
   const [commodities, refetch] = getCommoditiesData();
   const [alerts, setAlerts] = useState([]);
   const [dispenseToName, setDispenseToName] = useState("");
+  const user = fetchUser();
 
   if (Array.isArray(commodities)) {
     return (
@@ -52,8 +52,23 @@ export function DispenseCommodity(props) {
         }
 
         const logQueue = [];
-        Object.keys(formInput).map((id) => {
+        Object.keys(formInput).forEach((id) => {
             const dispensedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
+            if(dispensedCommodityData.EndBalance - formInput[id] < 0) {
+                setAlerts((prev) => [
+                    ...prev, 
+                    <AlertBar
+                        critical
+                        key={crypto.randomUUID()}
+                        children={"Failed to dispense " 
+                            + dispensedCommodityData.DataElementName
+                            + ", "
+                            + "cannot dispense more than current stock" 
+                        } 
+                        />]);
+                return;
+            }
+
             const mutatePromise = consumeCommodityCount(
                 mutator, 
                 formInput[id],
@@ -86,7 +101,7 @@ export function DispenseCommodity(props) {
                             date: date.toISOString(),
                             amount: formInput[id],
                             commodityID: dispensedCommodityData.DataElement,
-                            dispensedBy: user.meRequest,
+                            user: user.meRequest,
                             dispensedTo: dispenseToName,
                             commodityName: dispensedCommodityData.DataElementName,
                         };
@@ -94,7 +109,11 @@ export function DispenseCommodity(props) {
                 }) 
         })
         log(logQueue, "dispense").catch((error) => {
-            setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
+            setAlerts((prev) => 
+                [...prev, 
+                <AlertBar critical children={"Failed to log action. " + error.toString()} 
+                    key={crypto.randomUUID()}/>]
+            );
         });
         setDispenseToName("")
     }

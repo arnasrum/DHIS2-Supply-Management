@@ -11,7 +11,6 @@ export async function log(putItem, action) {
      */
     const postQuery = "http://localhost:9999/api/dataStore/IN5320-27/" + action;
     let response = await fetch(postQuery)
-    if (!response.ok) { throw new Error("failed to log") }
     response = await response.json()
     response = await fetch(postQuery, {
         method: "PUT",
@@ -24,5 +23,4 @@ export async function log(putItem, action) {
                 ...putItem,
             ]),
     })
-    if (!response.ok) { throw new Error("failed to log") }
 }

@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     fetchUser,
     getCommoditiesData,
-    getCommodityValueFromAPI,
-} from "../logicLayer/ApiCalls";
-import classes from "../App.module.css";
-import { log } from "../logicLayer/Log";
+} from "../../logicLayer/ApiCalls";
+import classes from "../../App.module.css";
+import { log } from "../../logicLayer/Log";
 
 import { AlertBar, AlertStack } from "@dhis2/ui";
-import { InputTable } from "../components/InputTable";
+import { InputTable } from "../../components/InputTable";
 import {
     changeCommodityCount,
     getSingleChangeMutator,
-} from "../logicLayer/ApiMuatations";
-import { getCurPeriod } from "../logicLayer/Helpers";
+} from "../../logicLayer/ApiMutations";
+import { getCurPeriod } from "../../logicLayer/Helpers";
 
 export function ReplenishCommodities() {
     // Get values and commodities form the API
@@ -30,7 +29,7 @@ export function ReplenishCommodities() {
         const logQueue = [];
         Object.keys(formInput).map((id) => {
         const replenishedCommodityData = commodities.filter((item) => item.DataElement == id)[0];
-        const mutatePromise = changeCommodityCount(
+        const errorMessagePromise = changeCommodityCount(
             mutator,
             parseInt(formInput[id]) + parseInt(replenishedCommodityData.EndBalance),
             replenishedCommodityData.DataElement,
@@ -40,14 +39,14 @@ export function ReplenishCommodities() {
             refetch,
             error
         );
-        Promise.resolve(mutatePromise)
+        Promise.resolve(errorMessagePromise)
             .then((error) => {
                 if (error) {
                     setAlerts((prev) => [...prev, error[0]]);
                 } else {
                     setAlerts((prev) => [
                     ...prev,
-                    <AlertBar success>
+                    <AlertBar success key={crypto.randomUUID()}>
                         {formInput[id].toString() +
                         " " +
                         replenishedCommodityData.DataElementName +
@@ -60,7 +59,7 @@ export function ReplenishCommodities() {
                     date: date.toISOString(),
                     amount: formInput[id],
                     commodityID: replenishedCommodityData.DataElement,
-                    dispensedBy: user.meRequest.name,
+                    user: user.meRequest,
                     commodityName: replenishedCommodityData.DataElementName,
                 };
                 logQueue.push(logItem);
@@ -68,13 +67,14 @@ export function ReplenishCommodities() {
             .catch((error) => {
                 setAlerts((prev) => [
                     ...prev,
-                    <AlertBar critical>{error.toString()}</AlertBar>,
+                    <AlertBar critical key={crypto.randomUUID()}>{"Logging for action has failed: " +error.toString()}</AlertBar>,
                 ]);
             });
         });
         log(logQueue, "request").catch((error) => {
-            setAlerts((prev) =>  [...prev, <AlertBar critical children={error.toString()} key={crypto.randomUUID()}/>]);
-            err = true
+            setAlerts((prev) =>  [...prev, 
+                <AlertBar critical children={"Failed to log action. " + error.toString()} key={crypto.randomUUID()}/>]
+            );
         });
   }
   // If data is fetched, create a table row for each commodity

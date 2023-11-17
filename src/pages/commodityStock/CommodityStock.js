@@ -9,7 +9,7 @@ import {
   TableRowHead,
   Tooltip,
 } from "@dhis2/ui";
-import { getCommoditiesData } from "../logicLayer/ApiCalls.js";
+import { getCommoditiesData } from "../../logicLayer/ApiCalls";
 import "./CommodityStock.css";
 
 export function CommodityStock(props) {

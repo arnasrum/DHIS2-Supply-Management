@@ -1,4 +1,4 @@
-import { changeCommodityCountMultiple } from "./ApiMuatations";
+import { changeCommodityCountMultiple } from "./ApiMutations";
 
 const consumeCommodityCount = (
     mutator, 
