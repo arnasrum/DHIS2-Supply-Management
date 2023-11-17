@@ -51,7 +51,7 @@ export function ClinicRequestTable(props) {
     function onSubmit(formInput) {
         const date = new Date();
         const logQueue = []
-        Object.entries(formInput).map((keyValuePair) => {
+        Object.entries(formInput).forEach((keyValuePair) => {
             const commodityID = commodity.split("&")[0];
             const commodityName = commodity.split("&")[1];
             const org = orgData.filter((org) => keyValuePair[0]  == org.DataElement)[0];
