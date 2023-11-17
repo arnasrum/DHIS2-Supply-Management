@@ -105,7 +105,7 @@ export function StockRecount(props) {
                     deviates from actual stock.
                 </p>
                 <InputTable
-                    headerNames={["Commodity", "Current Balance", "Recounted Balance"]}
+                    headerNames={["Commodity", "Current Stock", "Recounted Balance"]}
                     propertyNames={["DataElementName", "EndBalance"]}
                     onSubmit={onSubmit}
                     data={commodities}

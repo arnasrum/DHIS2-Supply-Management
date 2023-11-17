@@ -89,7 +89,7 @@ export function ReplenishCommodities() {
                 the amount you received.
             </p>
             <InputTable
-                headerNames={["Display Name", "Current Amount", "Amount"]}
+                headerNames={["Commodity", "Current Stock", "Replenish Amount"]}
                 propertyNames={["DataElementName", "EndBalance"]}
                 onSubmit={onSubmit}
                 data={commodities}
