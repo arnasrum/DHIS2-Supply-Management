@@ -3,11 +3,11 @@ import { AlertBar, AlertStack } from "@dhis2/ui";
 import {
     changeCommodityCountMultiple,
     getMultipleChangeMutator,
-} from "../logicLayer/ApiMuatations";
-import { getCommoditiesData, fetchUser } from "../logicLayer/ApiCalls";
-import { InputTable } from "../components/InputTable";
-import { makeDatavalueMap } from "../logicLayer/Helpers";
-import { log } from "../logicLayer/Log";
+} from "../../logicLayer/ApiMutations";
+import { getCommoditiesData, fetchUser } from "../../logicLayer/ApiCalls";
+import { InputTable } from "../../components/InputTable";
+import { makeDatavalueMap } from "../../logicLayer/Helpers";
+import { log } from "../../logicLayer/Log";
 
 export function StockRecount(props) {
     // states values

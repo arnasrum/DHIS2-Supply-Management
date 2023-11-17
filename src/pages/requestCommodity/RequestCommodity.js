@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { CommoditySelect } from "./CommoditySelect";
 import { ClinicRequestTable } from "./ClinicRequestTable";
 
-import { fetchOrgUnit, getCommoditiesNames } from "../logicLayer/ApiCalls";
+import { fetchOrgUnit, getCommoditiesNames } from "../../logicLayer/ApiCalls";
 
 export function RequestCommodity(props) {
     // Replace with logged in users org

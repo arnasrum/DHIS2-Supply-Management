@@ -22,7 +22,7 @@ export function CommoditySelect(props) {
                     <SingleSelectOption
                         key={crypto.randomUUID()}
                         label={item.displayName}
-                        value={item.id}
+                        value={item.id.toString() + "&" + item.displayName.toString()}
                         />
                     );
                 })}

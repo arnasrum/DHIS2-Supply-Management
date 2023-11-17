@@ -20,7 +20,7 @@ export function NameField(props) {
         else if(!regex.test(event.value)) {
             setAlerts((prev) => [...prev, 
                 <AlertBar info key={crypto.randomUUID()}>
-                    {"Please only use character in name field"}
+                    {"Please only use characters in name field"}
                 </AlertBar>]
             );
             return;

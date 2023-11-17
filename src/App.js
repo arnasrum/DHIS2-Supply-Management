@@ -1,13 +1,14 @@
 import React from "react";
 import classes from "./App.module.css";
 
-import { RequestCommodity } from "./requestCommodity/RequestCommodity";
-import { Navigation } from "./navigation/Navigation.js";
-import { CommodityStock } from "./commodityStock/CommodityStock.js";
-import { DispenseCommodity } from "./dispenseCommodity/DispenseCommodity";
-import { StockRecount } from "./stockRecount/StockRecount";
 import { useState } from "react";
-import { ReplenishCommodities } from "./replenishCommodities/ReplenishCommodities";
+
+import { RequestCommodity } from "./pages/requestCommodity/RequestCommodity";
+import { Navigation } from "./navigation/Navigation.js";
+import { CommodityStock } from "./pages/commodityStock/CommodityStock";
+import { DispenseCommodity } from "./pages/dispenseCommodity/DispenseCommodity";
+import { StockRecount } from "./pages/stockRecount/StockRecount";
+import { ReplenishCommodities } from "./pages/replenishCommodities/ReplenishCommodities";
 
 function MyApp() {
   const [activePage, setActivePage] = useState("Browse");
