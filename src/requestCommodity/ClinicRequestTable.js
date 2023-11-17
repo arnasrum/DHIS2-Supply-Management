@@ -53,7 +53,7 @@ export function ClinicRequestTable(props) {
         return (
         <>
             <InputTable 
-                headerNames={["Clinic", "Value", "Request Amount"]}
+                headerNames={["Clinic", "Current Stock", "Request Amount"]}
                 propertyNames={["dataElementName", "value"]}
                 onSubmit={onSubmit}
                 data={orgData}
